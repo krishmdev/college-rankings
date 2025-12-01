@@ -1,38 +1,21 @@
 {
   "name": "college-rankings",
-  "version": "0.1.0",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "web": "pnpm --filter mobile web",
+    "start": "pnpm --filter mobile start",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc -p packages/ranking-engine && tsc -p packages/dataset && pnpm --filter mobile typecheck",
+    "lint": "pnpm --filter mobile lint"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/node": "22.20.4",
+    "fast-check": "4.10.2",
+    "typescript": "~6.0.3",
+    "vitest": "4.1.11"
   }
 }
