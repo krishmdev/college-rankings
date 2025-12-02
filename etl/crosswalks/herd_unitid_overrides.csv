@@ -1,0 +1,27 @@
+herd_inst_id,herd_name,ipeds_unitid,ipeds_name,system_level,note
+029977,Johns Hopkins University,162928,Johns Hopkins University,true,HERD total includes the Applied Physics Laboratory
+008802,"Ohio State University, The",204796,Ohio State University-Main Campus,true,all campuses reported together
+102092,University of Maryland,163286,University of Maryland-College Park,true,joint College Park + Baltimore reporting
+003632,"Texas A&M University, College Station and Health Science Center",228723,Texas A&M University-College Station,true,includes Health Science Center
+353086,Vanderbilt University and Vanderbilt University Medical Center,221999,Vanderbilt University,true,includes VUMC
+004508,University of Colorado Anschutz Medical Campus,126562,University of Colorado Denver/Anschutz Medical Campus,true,IPEDS reports Denver and Anschutz as one unit
+006740,University of Colorado Denver,126562,University of Colorado Denver/Anschutz Medical Campus,true,summed with Anschutz
+008805,University of Cincinnati,201885,University of Cincinnati-Main Campus,false,
+102130,"University of Nebraska, Lincoln and Medical Center",181464,University of Nebraska-Lincoln,true,includes the Medical Center in Omaha
+008718,University of Connecticut,129020,University of Connecticut,true,includes UConn Health
+003210,Oregon State University,209542,Oregon State University,false,
+002589,University of New Hampshire,183044,University of New Hampshire-Main Campus,false,
+102059,University of Mississippi,176017,University of Mississippi,true,includes the Medical Center
+208828,William & Mary,231624,William & Mary,false,includes the Virginia Institute of Marine Science
+008803,Ohio University,204857,Ohio University-Main Campus,false,
+233046,Western Michigan University and Homer Stryker M.D. School of Medicine,172699,Western Michigan University,true,includes the medical school
+008799,Kent State University,203517,Kent State University at Kent,false,
+001479,Embry-Riddle Aeronautical University,133553,Embry-Riddle Aeronautical University-Daytona Beach,true,all campuses reported together
+008800,Miami University,204024,Miami University-Oxford,false,
+012310,"University of Akron, The",200800,University of Akron Main Campus,false,
+009167,Wright State University,206604,Wright State University-Main Campus,false,
+008796,Bowling Green State University,201441,Bowling Green State University-Main Campus,false,
+029119,Polytechnic University of Puerto Rico,243577,Universidad Politecnica de Puerto Rico,false,
+008770,Fairleigh Dickinson University,184603,Fairleigh Dickinson University-Metropolitan Campus,true,both NJ campuses reported together
+100588,Doane University,181020,Doane University,false,
+002671,Bard College,189088,Bard College,false,
