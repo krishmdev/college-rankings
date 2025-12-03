@@ -1,0 +1,83 @@
+{
+  "clubs": null,
+  "contentHash": "82dfdfdb535d560b05fd9ddd3df65d33c883d66c0134cde8468f0044f9ebd1c5",
+  "coverage": {
+    "admit_rate": 0.9145,
+    "earnings_to_price": 0.9628,
+    "endowment_per_student": 0.9595,
+    "faculty_count": 0.9902,
+    "faculty_salary": 0.9954,
+    "ft_faculty_share": 0.9941,
+    "grad_rate": 0.9804,
+    "instructional_spend_per_fte": 1.0,
+    "median_debt": 0.9758,
+    "median_earnings_10y": 0.9824,
+    "net_price": 0.9726,
+    "net_price_low_income": 0.9687,
+    "pell_grad_rate": 0.968,
+    "research_per_student": 1.0,
+    "research_total": 1.0,
+    "retention_rate": 0.9785,
+    "sat_avg": 0.6443,
+    "student_faculty_ratio": 1.0,
+    "undergrad_size": 1.0
+  },
+  "generatedAt": "2025-12-23T02:35:15-0400",
+  "herd": {
+    "excluded_rows": 46,
+    "imputed_zero": 724,
+    "matched_rows": 809,
+    "rows": 925,
+    "schools_with_R&D": 808,
+    "system_level": 12
+  },
+  "snapshotId": "2025-12-23",
+  "sources": [
+    {
+      "file": "scorecard.zip",
+      "homepage": "https://collegescorecard.ed.gov/data/",
+      "id": "scorecard",
+      "license": "Public domain (U.S. government work)",
+      "name": "College Scorecard, Most Recent Institution-Level Data",
+      "publisher": "U.S. Department of Education",
+      "retrieved": "2025-12-23",
+      "sha256": "f56a181b000ca4914e924c16b6b81dcc656e25aeb2ac68ab7d271ac0f29ffd58",
+      "url": "https://ed-public-download.scorecard.network/downloads/Most-Recent-Cohorts-Institution_06102026.zip"
+    },
+    {
+      "file": "urban_staff_2024.json",
+      "homepage": "https://educationdata.urban.org/",
+      "id": "urban_ipeds",
+      "license": "Free to use with attribution: Urban Institute Education Data Portal, educationdata.urban.org",
+      "name": "IPEDS salaries of instructional staff, via the Education Data Portal",
+      "publisher": "Urban Institute (data from NCES IPEDS)",
+      "retrieved": "2025-12-23",
+      "sha256": "76cdf221315c7a428035c19b41ec496e536086459d67a6f3bbf94b17e36c6a60",
+      "url": "https://educationdata.urban.org/api/v1/college-university/ipeds/salaries-instructional-staff/2024/?academic_rank=99&sex=99&contract_length=99"
+    },
+    {
+      "file": "herd_2024.zip",
+      "homepage": "https://ncses.nsf.gov/surveys/higher-education-research-development/2024",
+      "id": "nsf_herd",
+      "license": "Public domain (U.S. government work)",
+      "name": "Higher Education Research and Development Survey, FY2024",
+      "publisher": "National Center for Science and Engineering Statistics (NSF)",
+      "retrieved": "2025-12-23",
+      "sha256": "d1fc1df5efe4a6ddf9b333857e36cfc6e28a8eac9430984aa0fadd4968b43f1b",
+      "shortFormSha256": "2315d3777e2e40e05d46f7fb91ef9a59d8101ebeaa8538f0bc9a3330ba0d78ec",
+      "url": "https://ncses.nsf.gov/821/assets/0/files/higher_education_r_and_d_2024.zip"
+    },
+    {
+      "homepage": "",
+      "id": "derived",
+      "license": "MIT",
+      "name": "Computed in etl/src/college_etl/derive.py",
+      "publisher": ""
+    }
+  ],
+  "universe": {
+    "count": 1532,
+    "rule": "CURROPER=1, PREDDEG=3, CONTROL in [1, 2], ICLEVEL=1, DISTANCEONLY!=1, UGDS>=300"
+  },
+  "validation": "passed"
+}
