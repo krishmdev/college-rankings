@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .config import ValidationRules
-from .sources.herd import HerdJoin
+from .sources.herd import HerdJoin, Member
 from .transform import SchoolRow
 
 RANGES: dict[str, tuple[float, float]] = {
@@ -31,6 +31,12 @@ SPOT_CHECKS: list[tuple[int, str, float, float]] = [
     (162928, "research_total", 4129.3e6, 0.1e6),  # Johns Hopkins, only reachable via the crosswalk
     (204796, "research_total", 1581.6e6, 0.1e6),  # Ohio State, same
 ]
+# Campuses inside a parent's joint HERD row: research is unknown on its own, never $0.
+MEMBER_CHECKS: list[tuple[int, int]] = [
+    (163259, 163286),  # UMD Baltimore -> UMD College Park (joint row 102092)
+    (181428, 181464),  # UNMC -> UNL (joint row 102130)
+    (207342, 207500),  # OU Health Sciences -> OU Norman
+]
 CLUB_SPOT_CHECKS: list[tuple[int, str, float]] = [(170976, "clubs_count", 1000)]  # UMich > 1,000
 
 
@@ -56,6 +62,9 @@ def validate(
     rules: ValidationRules = ValidationRules(),
     *,
     clubs_enabled: bool,
+    members: dict[int, Member] | None = None,
+    reviewed_absent: set[int] | None = None,
+    large_faculty: int = 250,
 ) -> Report:
     rep = Report()
     n = len(schools)
@@ -85,11 +94,40 @@ def validate(
         )
 
     by_id = {s.id: s for s in schools}
+    members = members or {}
+    reviewed_absent = reviewed_absent or set()
+    for m in members.values():
+        parent = by_id.get(m.parent)
+        if parent is None or m.parent not in herd.usd:
+            rep.failures.append(f"HERD member {m.unitid} {m.name}: parent {m.parent} has no HERD figure")
+    # A $0 for a campus of a HERD reporter, or for a school with a big faculty, is probably a join
+    # miss rather than a real absence. Each one must be listed as a member or reviewed by hand.
+    herd_opeids = {s.opeid6 for s in schools if s.id in herd.usd and s.opeid6}
+    for s in schools:
+        if s.flags.get("research_total") != "imputed_zero" or s.id in reviewed_absent:
+            continue
+        if s.opeid6 and s.opeid6 in herd_opeids:
+            rep.failures.append(
+                f"{s.id} {s.name}: imputed $0 R&D but shares OPEID6 {s.opeid6} with a HERD school"
+            )
+        elif (s.values.get("faculty_count") or 0) >= large_faculty:
+            rep.failures.append(
+                f"{s.id} {s.name}: imputed $0 R&D with {s.values['faculty_count']:.0f} faculty; "
+                "add to herd_members.csv or herd_reviewed_absent.csv"
+            )
     for unitid, key, expected, tol in SPOT_CHECKS:
         s = by_id.get(unitid)
         v = s.values.get(key) if s else None
         if v is None or abs(v - expected) > tol:
             rep.failures.append(f"spot check {unitid} {key}: expected {expected}, got {v}")
+    for member, parent in MEMBER_CHECKS:
+        s = by_id.get(member)
+        if (
+            s is None
+            or s.flags.get("research_total") != "reported_with_parent"
+            or (s.reported_with.get("research_total") != parent)
+        ):
+            rep.failures.append(f"spot check {member}: expected research reported with parent {parent}")
     if clubs_enabled:
         for unitid, key, minimum in CLUB_SPOT_CHECKS:
             s = by_id.get(unitid)

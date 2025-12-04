@@ -60,7 +60,15 @@ export interface MetricDef {
 
 export type Control = 'public' | 'private_nonprofit';
 export type Locale = 'city' | 'suburb' | 'town' | 'rural';
-export type MetricFlag = 'imputed_zero' | 'system_level' | 'derived' | 'manual' | 'suppressed';
+export const METRIC_FLAGS = [
+  'imputed_zero',
+  'system_level',
+  'reported_with_parent',
+  'derived',
+  'manual',
+  'suppressed',
+] as const;
+export type MetricFlag = (typeof METRIC_FLAGS)[number];
 
 export interface School {
   id: number;
@@ -76,6 +84,8 @@ export interface School {
   ugSize: number;
   values: Partial<Record<MetricKey, number | null>>;
   flags?: Partial<Record<MetricKey, MetricFlag>>;
+  /** Metric -> id of the school whose reported figure includes this one. */
+  reportedWith?: Partial<Record<MetricKey, number>>;
 }
 
 export type MissingStrategy = 'penalize' | 'neutral' | 'renormalize';

@@ -7,7 +7,18 @@ import polars as pl
 
 from ..config import SCORECARD_CSV
 
-ID_COLUMNS = ["UNITID", "INSTNM", "ALIAS", "CITY", "STABBR", "INSTURL", "LATITUDE", "LONGITUDE", "LOCALE"]
+ID_COLUMNS = [
+    "UNITID",
+    "OPEID6",
+    "INSTNM",
+    "ALIAS",
+    "CITY",
+    "STABBR",
+    "INSTURL",
+    "LATITUDE",
+    "LONGITUDE",
+    "LOCALE",
+]
 FILTER_COLUMNS = ["CURROPER", "PREDDEG", "CONTROL", "ICLEVEL", "DISTANCEONLY", "UGDS"]
 METRIC_COLUMNS = [
     "GRADS",

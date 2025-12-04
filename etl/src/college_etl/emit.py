@@ -40,6 +40,9 @@ def school_json(s: SchoolRow, metric_keys: list[str]) -> dict[str, Any]:
     flags = {k: v for k, v in sorted(s.flags.items()) if k in metric_keys}
     if flags:
         out["flags"] = flags
+    reported = {k: v for k, v in sorted(s.reported_with.items()) if k in metric_keys}
+    if reported:
+        out["reportedWith"] = reported
     return out
 
 

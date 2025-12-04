@@ -37,6 +37,22 @@ def test_derived_metrics():
     assert s.flags["research_per_student"] == "imputed_zero"
 
 
+def test_joint_herd_figure_is_spread_over_member_campuses():
+    parent = school(member_enrollment=750)
+    parent.values.update(research_total=4e6)
+    derive(parent)
+    assert parent.values["research_per_student"] == 2000  # 4e6 / (1000 + 250 + 750)
+
+    member = school(id=2)
+    member.values["research_total"] = None
+    member.flags["research_total"] = "reported_with_parent"
+    member.reported_with["research_total"] = 1
+    derive(member)
+    assert member.values["research_per_student"] is None
+    assert member.flags["research_per_student"] == "reported_with_parent"
+    assert member.reported_with["research_per_student"] == 1
+
+
 def test_derived_metrics_propagate_missing():
     s = school(endowment=None)
     s.values.update(research_total=None, clubs_count=None, net_price=None, median_earnings_10y=50000)

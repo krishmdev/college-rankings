@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
-import { METRIC_KEYS } from '@college/ranking-engine';
+import { METRIC_FLAGS, METRIC_KEYS } from '@college/ranking-engine';
 
 const metricKey = z.enum(METRIC_KEYS);
 
-export const MetricFlagSchema = z.enum(['imputed_zero', 'system_level', 'derived', 'manual', 'suppressed']);
+export const MetricFlagSchema = z.enum(METRIC_FLAGS);
 
 export const SchoolSchema = z.object({
   id: z.number().int().positive(),
@@ -20,6 +20,7 @@ export const SchoolSchema = z.object({
   ugSize: z.number().int().nonnegative(),
   values: z.partialRecord(metricKey, z.number().nullable()),
   flags: z.partialRecord(metricKey, MetricFlagSchema).optional(),
+  reportedWith: z.partialRecord(metricKey, z.number().int().positive()).optional(),
 });
 
 export const MetricMetaSchema = z.object({

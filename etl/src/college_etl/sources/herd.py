@@ -137,3 +137,30 @@ def join(
         matched_rows=matched,
         excluded_rows=excluded,
     )
+
+
+@dataclass(frozen=True)
+class Member:
+    unitid: int
+    name: str
+    parent: int
+    note: str
+
+
+def load_members(path: Path) -> dict[int, Member]:
+    """Campuses whose R&D is included in another school's HERD row (branch campuses, med centers)."""
+    with path.open(newline="") as fh:
+        return {
+            int(r["member_unitid"]): Member(
+                unitid=int(r["member_unitid"]),
+                name=r["member_name"],
+                parent=int(r["parent_unitid"]),
+                note=r.get("note", ""),
+            )
+            for r in csv.DictReader(fh)
+        }
+
+
+def load_reviewed_absent(path: Path) -> set[int]:
+    with path.open(newline="") as fh:
+        return {int(r["unitid"]) for r in csv.DictReader(fh)}

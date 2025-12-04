@@ -41,8 +41,13 @@ class SchoolRow:
     ug_size: int
     grads: int
     endowment: float | None
+    opeid6: str = ""
     values: dict[str, float | None] = field(default_factory=dict)
     flags: dict[str, str] = field(default_factory=dict)
+    # metric -> unitid of the school whose figure covers this one (joint HERD reporting)
+    reported_with: dict[str, int] = field(default_factory=dict)
+    # enrollment of in-universe campuses whose R&D is folded into this school's figure
+    member_enrollment: int = 0
 
 
 def domain_from_url(url: str | None) -> str | None:
@@ -98,6 +103,7 @@ def scorecard_rows(df: pl.DataFrame) -> list[SchoolRow]:
             ug_size=int(float(row["UGDS"])),
             grads=int(scorecard_value(row.get("GRADS"))[0] or 0),
             endowment=scorecard_value(row.get("ENDOWEND"))[0],
+            opeid6=(row.get("OPEID6") or "").strip(),
         )
         for key, cols in SCORECARD_METRICS.items():
             v, suppressed = _pick(row, cols)

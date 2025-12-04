@@ -24,6 +24,7 @@ from .derive import derive
 from .emit import build_document, coverage_markdown, dumps_snapshot, write_sqlite
 from .http import adopt, fetch
 from .provenance import DERIVED, ENGAGE, HERD, MANUAL, METRIC_SOURCES, SCORECARD, SOURCE_INFO, URBAN
+from .schema import Snapshot
 from .sources import engage, herd, scorecard, urban
 from .transform import SchoolRow, scorecard_rows
 from .validate import validate
@@ -132,11 +133,22 @@ def build(
         herd.load_exclusions(CROSSWALKS / "herd_exclusions.csv"),
         rules.herd_gate_usd,
     )
+    members = herd.load_members(CROSSWALKS / "herd_members.csv")
+    reviewed_absent = herd.load_reviewed_absent(CROSSWALKS / "herd_reviewed_absent.csv")
+    by_id = {s.id: s for s in schools}
     for s in schools:
         if s.id in joined.usd:
             s.values["research_total"] = joined.usd[s.id]
             if s.id in joined.system_level:
                 s.flags["research_total"] = "system_level"
+        elif s.id in members:
+            # Covered by the parent's HERD row: unknown on its own, not $0.
+            m = members[s.id]
+            s.values["research_total"] = None
+            s.flags["research_total"] = "reported_with_parent"
+            s.reported_with["research_total"] = m.parent
+            if m.parent in by_id:
+                by_id[m.parent].member_enrollment += s.ug_size + s.grads
         else:
             # HERD surveys institutions with at least $150K of R&D, so absence means little or none.
             s.values["research_total"] = 0.0
@@ -164,7 +176,15 @@ def build(
     for s in schools:
         derive(s)
 
-    report = validate(schools, joined, METRIC_KEYS, rules, clubs_enabled=clubs)
+    report = validate(
+        schools,
+        joined,
+        METRIC_KEYS,
+        rules,
+        clubs_enabled=clubs,
+        members=members,
+        reviewed_absent=reviewed_absent,
+    )
     herd_stats = {
         "rows": len(herd_rows),
         "matched_rows": joined.matched_rows,
@@ -172,6 +192,9 @@ def build(
         "schools_with_R&D": len(joined.usd),
         "system_level": len(joined.system_level),
         "imputed_zero": sum(1 for s in schools if s.flags.get("research_total") == "imputed_zero"),
+        "reported_with_parent": sum(
+            1 for s in schools if s.flags.get("research_total") == "reported_with_parent"
+        ),
     }
     console.print(f"herd: {herd_stats}")
     if not report.ok:
@@ -222,6 +245,7 @@ def build(
         metrics_meta=metrics_meta,
         sources=sources,
     )
+    Snapshot.model_validate(doc)
     out_dir = SNAPSHOTS_DIR / snapshot_id
     out_dir.mkdir(parents=True, exist_ok=True)
     text = dumps_snapshot(doc)
