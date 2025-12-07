@@ -17,11 +17,13 @@ Universe: 1532 schools (CURROPER=1, PREDDEG=3, CONTROL in [1, 2], ICLEVEL=1, DIS
 | `ft_faculty_share` | scorecard | 99.4% |
 | `instructional_spend_per_fte` | scorecard | 100.0% |
 | `faculty_salary` | scorecard | 99.5% |
-| `research_total` | nsf_herd | 100.0% |
-| `research_per_student` | derived | 100.0% |
+| `research_total` | nsf_herd | 97.3% |
+| `research_per_student` | derived | 97.3% |
+| `clubs_count` | campuslabs_engage | 19.4% |
+| `clubs_per_1k_ug` | derived | 19.4% |
 | `admit_rate` | scorecard | 91.5% |
 | `sat_avg` | scorecard | 64.4% |
 | `undergrad_size` | scorecard | 100.0% |
 | `endowment_per_student` | derived | 96.0% |
 
-HERD join: rows 925, matched rows 809, excluded rows 46, schools with R&D 808, system level 12, imputed zero 724.
+HERD join: rows 925, matched rows 809, excluded rows 46, schools with R&D 808, system level 12, imputed zero 683, reported with parent 41.

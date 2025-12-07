@@ -1,8 +1,14 @@
 {
-  "clubs": null,
-  "contentHash": "82dfdfdb535d560b05fd9ddd3df65d33c883d66c0134cde8468f0044f9ebd1c5",
+  "clubs": {
+    "checked_subdomains": 1496,
+    "crawl_dates": "2025-12-23..2025-12-23",
+    "found": 305
+  },
+  "contentHash": "9ea988f0559b81d5e2d1178dc901ef0507f916c0b8ddad006a282d7687ef5508",
   "coverage": {
     "admit_rate": 0.9145,
+    "clubs_count": 0.1945,
+    "clubs_per_1k_ug": 0.1945,
     "earnings_to_price": 0.9628,
     "endowment_per_student": 0.9595,
     "faculty_count": 0.9902,
@@ -15,18 +21,19 @@
     "net_price": 0.9726,
     "net_price_low_income": 0.9687,
     "pell_grad_rate": 0.968,
-    "research_per_student": 1.0,
-    "research_total": 1.0,
+    "research_per_student": 0.9732,
+    "research_total": 0.9732,
     "retention_rate": 0.9785,
     "sat_avg": 0.6443,
     "student_faculty_ratio": 1.0,
     "undergrad_size": 1.0
   },
-  "generatedAt": "2025-12-23T02:35:15-0400",
+  "generatedAt": "2025-12-23T07:14:31-0400",
   "herd": {
     "excluded_rows": 46,
-    "imputed_zero": 724,
+    "imputed_zero": 683,
     "matched_rows": 809,
+    "reported_with_parent": 41,
     "rows": 925,
     "schools_with_R&D": 808,
     "system_level": 12
@@ -66,6 +73,23 @@
       "sha256": "d1fc1df5efe4a6ddf9b333857e36cfc6e28a8eac9430984aa0fadd4968b43f1b",
       "shortFormSha256": "2315d3777e2e40e05d46f7fb91ef9a59d8101ebeaa8538f0bc9a3330ba0d78ec",
       "url": "https://ncses.nsf.gov/821/assets/0/files/higher_education_r_and_d_2024.zip"
+    },
+    {
+      "checked_subdomains": 1496,
+      "crawl_dates": "2025-12-23..2025-12-23",
+      "found": 305,
+      "homepage": "https://www.campuslabs.com/campus-engagement/",
+      "id": "campuslabs_engage",
+      "license": "Counts only (no organization content is stored); crawled at <= 2 requests/second",
+      "name": "Campus Labs Engage public organization directories",
+      "publisher": "Anthology / each school"
+    },
+    {
+      "homepage": "",
+      "id": "manual_clubs",
+      "license": "MIT",
+      "name": "Hand-entered club counts",
+      "publisher": "This repo (etl/crosswalks/clubs_manual.csv), each row cites its source page"
     },
     {
       "homepage": "",
