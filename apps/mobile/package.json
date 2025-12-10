@@ -4,21 +4,26 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "expo start",
+    "start": "node scripts/copy-snapshot.mjs && expo start",
     "web": "node scripts/copy-snapshot.mjs && expo start --web",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "copy-snapshot": "node scripts/copy-snapshot.mjs",
+    "export:web": "node scripts/copy-snapshot.mjs && WEB_BASE_URL=${WEB_BASE_URL-/college-rankings} expo export -p web && node scripts/finish-export.mjs",
+    "preview:web": "node scripts/preview-subpath.mjs"
   },
   "dependencies": {
     "@college/dataset": "workspace:*",
     "@college/ranking-engine": "workspace:*",
+    "@expo-google-fonts/fraunces": "0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "5.2.0",
     "@supabase/supabase-js": "2.117.0",
     "@tanstack/react-query": "5.103.2",
     "expo": "~57.0.24",
+    "expo-clipboard": "~57.0.2",
     "expo-constants": "~57.0.19",
     "expo-font": "~57.0.4",
     "expo-linking": "~57.0.10",
