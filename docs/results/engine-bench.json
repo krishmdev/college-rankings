@@ -1,0 +1,50 @@
+{
+  "schools": 2500,
+  "metrics": 28,
+  "weighted_metrics": 28,
+  "profile_token": "v1.eyJ3Ijp7ImdyYWRfcmF0ZSI6MSwicmV0ZW50aW9uX3JhdGUiOjIsIm1lZGlhbl9lYXJuaW5nc18xMHkiOjMsInBlbGxfZ3JhZF9yYXRlIjo0LCJuZXRfcHJpY2UiOjUsIm5ldF9wcmljZV9sb3dfaW5jb21lIjo2LCJtZWRpYW5fZGVidCI6NywiZWFybmluZ3NfdG9fcHJpY2UiOjgsImZhY3VsdHlfY291bnQiOjksInN0dWRlbnRfZmFjdWx0eV9yYXRpbyI6MTAsImZ0X2ZhY3VsdHlfc2hhcmUiOjEsImluc3RydWN0aW9uYWxfc3BlbmRfcGVyX2Z0ZSI6MiwiZmFjdWx0eV9zYWxhcnkiOjMsInJlc2VhcmNoX3RvdGFsIjo0LCJyZXNlYXJjaF9wZXJfc3R1ZGVudCI6NSwiY2x1YnNfY291bnQiOjYsImNsdWJzX3Blcl8xa191ZyI6NywiYWRtaXRfcmF0ZSI6OCwic2F0X2F2ZyI6OSwidW5kZXJncmFkX3NpemUiOjEwLCJlbmRvd21lbnRfcGVyX3N0dWRlbnQiOjEsImNyb3dkX292ZXJhbGwiOjIsImNyb3dkX2FjYWRlbWljcyI6MywiY3Jvd2Rfc29jaWFsIjo0LCJjcm93ZF9jYXJlZXIiOjUsImNyb3dkX2hvdXNpbmciOjYsImNyb3dkX3NhZmV0eSI6NywiY3Jvd2RfdmFsdWUiOjh9fQ",
+  "node": "v22.16.0",
+  "note": "Node, warm index (buildIndex excluded from rank timings), performance.now()",
+  "target_p50_ms": 5,
+  "rank_penalize_ms": {
+    "p50": 1.124040999999977,
+    "p95": 1.2029159999999592,
+    "mean": 1.1038539066666644
+  },
+  "rank_neutral_ms": {
+    "p50": 1.1267080000000078,
+    "p95": 1.1635420000000067,
+    "mean": 1.121042346666671
+  },
+  "rank_renormalize_ms": {
+    "p50": 1.1239580000001297,
+    "p95": 1.199999999999818,
+    "mean": 1.1138834633333294
+  },
+  "rank_filtered_cached_ms": {
+    "p50": 1.0034579999999096,
+    "p95": 1.0355839999999716,
+    "mean": 0.9870932266666569
+  },
+  "rank_filtered_uncached_ms": {
+    "p50": 15.309125000000222,
+    "p95": 16.629583999999795,
+    "mean": 15.462590469999999
+  },
+  "build_index_ms": {
+    "p50": 14.957875000000058,
+    "p95": 15.449583000000075,
+    "mean": 14.96270276666672
+  },
+  "sensitivity_one_school_ms": {
+    "p50": 23.66358300000047,
+    "p95": 25.608541999999943,
+    "mean": 23.842176366666628
+  },
+  "real_snapshot_schools": 1532,
+  "real_rank_balanced_ms": {
+    "p50": 0.4361670000007507,
+    "p95": 0.5522909999999683,
+    "mean": 0.45964803333335114
+  }
+}

@@ -1,11 +1,12 @@
 // Timing check for the 5 ms target: 2,500 schools x every registry metric weighted.
 // Run through `pnpm engine:bench` (wrapped in the compute lease); writes BENCH_OUT if set.
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 import { expect, it } from 'vitest';
 
 import type { School } from '../src';
-import { buildIndex, encodeProfile, METRICS, rank, sensitivity } from '../src';
+import { buildIndex, encodeProfile, METRICS, PRESETS, rank, sensitivity } from '../src';
 
 function lcg(seed: number) {
   let x = seed >>> 0;
@@ -67,9 +68,23 @@ it('ranks 2,500 schools x all metrics in under 5 ms (p50)', () => {
     filters: { sizes: ['medium' as const, 'large' as const] },
   };
   results.rank_filtered_cached_ms = timeIt(() => rank(index, filtered), 300);
+  // Worst case for a slider drag right after a filter change: mask and percentiles rebuilt.
+  results.rank_filtered_uncached_ms = timeIt(() => {
+    index.cache.clear();
+    rank(index, filtered);
+  }, 100);
   results.build_index_ms = timeIt(() => buildIndex(schools), 30);
   const base = rank(index, { ...filtered, normalizeWithin: 'all', filters: {} });
   results.sensitivity_one_school_ms = timeIt(() => sensitivity(base, base.order[100]!), 30);
+
+  // The real snapshot, with the Balanced preset.
+  const snap = JSON.parse(readFileSync(join(__dirname, '../../dataset/data/snapshot.json'), 'utf8')) as {
+    schools: School[];
+  };
+  const real = buildIndex(snap.schools);
+  const balanced = PRESETS.find((p) => p.id === 'balanced')!.profile;
+  results.real_snapshot_schools = snap.schools.length;
+  results.real_rank_balanced_ms = timeIt(() => rank(real, balanced), 300);
 
   const out = {
     schools: schools.length,
@@ -77,6 +92,7 @@ it('ranks 2,500 schools x all metrics in under 5 ms (p50)', () => {
     weighted_metrics: Object.keys(weights).length,
     profile_token: encodeProfile(base.profile),
     node: process.version,
+    note: 'Node, warm index (buildIndex excluded from rank timings), performance.now()',
     target_p50_ms: 5,
     ...results,
   };

@@ -10,7 +10,8 @@
     "start": "pnpm --filter mobile start",
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p packages/ranking-engine && tsc -p packages/dataset && pnpm --filter mobile typecheck",
-    "lint": "pnpm --filter mobile lint"
+    "lint": "pnpm --filter mobile lint",
+    "engine:bench": "bash scripts/bench-engine.sh"
   },
   "devDependencies": {
     "@types/node": "22.20.4",

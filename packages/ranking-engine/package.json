@@ -7,7 +7,7 @@
   "types": "src/index.ts",
   "scripts": {
     "test": "vitest run",
-    "bench": "vitest bench --run"
+    "bench": "vitest run --config vitest.bench.config.ts"
   },
   "dependencies": {
     "zod": "4.6.5"

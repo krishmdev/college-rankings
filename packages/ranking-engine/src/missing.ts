@@ -7,7 +7,9 @@ export const MISSING_STRATEGIES: readonly { key: MissingStrategy; label: string;
   {
     key: 'penalize',
     label: 'Penalize',
-    description: 'A missing metric counts as the 25th percentile, so not reporting never helps.',
+    description:
+      'A missing metric counts as the 25th percentile. Schools that would land in the bottom quarter ' +
+      'can come out ahead by not reporting; turn on "require data" to drop non-reporters instead.',
   },
   {
     key: 'neutral',
