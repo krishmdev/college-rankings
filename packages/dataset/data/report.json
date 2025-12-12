@@ -1,0 +1,643 @@
+{
+  "snapshotId": "2025-12-23",
+  "snapshotHash": "9ea988f0559b81d5e2d1178dc901ef0507f916c0b8ddad006a282d7687ef5508",
+  "schools": 1532,
+  "research": {
+    "schools_with_value": 1491,
+    "imputed_zero_not_in_herd": 683,
+    "reported_with_parent": 41,
+    "median_usd": 373000,
+    "mean_usd": 72803638,
+    "sd_usd": 269268273,
+    "max_usd": 4129260000,
+    "max_school": "Johns Hopkins University",
+    "minmax_share_below_0_05": 0.914,
+    "minmax_median_school": 0.00009,
+    "minmax_schools_above_0_5": 3,
+    "z_boston_university": 2.64,
+    "z_median_school": -0.27,
+    "percentile_boston_university": 0.971
+  },
+  "presets": [
+    {
+      "id": "balanced",
+      "name": "Balanced",
+      "top": [
+        {
+          "rank": 1,
+          "id": 227757,
+          "name": "Rice University",
+          "score": 94.4
+        },
+        {
+          "rank": 2,
+          "id": 186131,
+          "name": "Princeton University",
+          "score": 93.6
+        },
+        {
+          "rank": 3,
+          "id": 221999,
+          "name": "Vanderbilt University",
+          "score": 92.5
+        },
+        {
+          "rank": 4,
+          "id": 144050,
+          "name": "University of Chicago",
+          "score": 92.4
+        },
+        {
+          "rank": 5,
+          "id": 243744,
+          "name": "Stanford University",
+          "score": 90.5
+        },
+        {
+          "rank": 6,
+          "id": 170976,
+          "name": "University of Michigan-Ann Arbor",
+          "score": 88.8
+        },
+        {
+          "rank": 7,
+          "id": 190372,
+          "name": "The Cooper Union for the Advancement of Science and Art",
+          "score": 87.9
+        },
+        {
+          "rank": 8,
+          "id": 121345,
+          "name": "Pomona College",
+          "score": 87.4
+        },
+        {
+          "rank": 9,
+          "id": 198385,
+          "name": "Davidson College",
+          "score": 87.1
+        },
+        {
+          "rank": 10,
+          "id": 166683,
+          "name": "Massachusetts Institute of Technology",
+          "score": 86.5
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "name": "Research powerhouse",
+      "top": [
+        {
+          "rank": 1,
+          "id": 162928,
+          "name": "Johns Hopkins University",
+          "score": 99
+        },
+        {
+          "rank": 2,
+          "id": 215062,
+          "name": "University of Pennsylvania",
+          "score": 98.9
+        },
+        {
+          "rank": 3,
+          "id": 190415,
+          "name": "Cornell University",
+          "score": 98.9
+        },
+        {
+          "rank": 4,
+          "id": 243744,
+          "name": "Stanford University",
+          "score": 98.9
+        },
+        {
+          "rank": 5,
+          "id": 198419,
+          "name": "Duke University",
+          "score": 98.9
+        },
+        {
+          "rank": 6,
+          "id": 166027,
+          "name": "Harvard University",
+          "score": 98.8
+        },
+        {
+          "rank": 7,
+          "id": 130794,
+          "name": "Yale University",
+          "score": 98.8
+        },
+        {
+          "rank": 8,
+          "id": 110662,
+          "name": "University of California-Los Angeles",
+          "score": 98.8
+        },
+        {
+          "rank": 9,
+          "id": 190150,
+          "name": "Columbia University in the City of New York",
+          "score": 98.5
+        },
+        {
+          "rank": 10,
+          "id": 240444,
+          "name": "University of Wisconsin-Madison",
+          "score": 98.4
+        }
+      ]
+    },
+    {
+      "id": "value",
+      "name": "Best value",
+      "top": [
+        {
+          "rank": 1,
+          "id": 186131,
+          "name": "Princeton University",
+          "score": 98.8
+        },
+        {
+          "rank": 2,
+          "id": 197027,
+          "name": "United States Merchant Marine Academy",
+          "score": 97.3
+        },
+        {
+          "rank": 3,
+          "id": 190512,
+          "name": "CUNY Bernard M Baruch College",
+          "score": 95.8
+        },
+        {
+          "rank": 4,
+          "id": 134130,
+          "name": "University of Florida",
+          "score": 95.3
+        },
+        {
+          "rank": 5,
+          "id": 243744,
+          "name": "Stanford University",
+          "score": 94.2
+        },
+        {
+          "rank": 6,
+          "id": 227757,
+          "name": "Rice University",
+          "score": 92.8
+        },
+        {
+          "rank": 7,
+          "id": 110662,
+          "name": "University of California-Los Angeles",
+          "score": 92.7
+        },
+        {
+          "rank": 8,
+          "id": 110635,
+          "name": "University of California-Berkeley",
+          "score": 92.7
+        },
+        {
+          "rank": 9,
+          "id": 199120,
+          "name": "University of North Carolina at Chapel Hill",
+          "score": 92.6
+        },
+        {
+          "rank": 10,
+          "id": 110565,
+          "name": "California State University-Fullerton",
+          "score": 91.7
+        }
+      ]
+    },
+    {
+      "id": "small",
+      "name": "Small and personal",
+      "top": [
+        {
+          "rank": 1,
+          "id": 441982,
+          "name": "Franklin W Olin College of Engineering",
+          "score": 92
+        },
+        {
+          "rank": 2,
+          "id": 110404,
+          "name": "California Institute of Technology",
+          "score": 91.6
+        },
+        {
+          "rank": 3,
+          "id": 399911,
+          "name": "Soka University of America",
+          "score": 90.3
+        },
+        {
+          "rank": 4,
+          "id": 130624,
+          "name": "United States Coast Guard Academy",
+          "score": 90.1
+        },
+        {
+          "rank": 5,
+          "id": 115409,
+          "name": "Harvey Mudd College",
+          "score": 89.8
+        },
+        {
+          "rank": 6,
+          "id": 170286,
+          "name": "Hillsdale College",
+          "score": 88.7
+        },
+        {
+          "rank": 7,
+          "id": 148016,
+          "name": "Principia College",
+          "score": 88.3
+        },
+        {
+          "rank": 8,
+          "id": 112260,
+          "name": "Claremont McKenna College",
+          "score": 87.5
+        },
+        {
+          "rank": 9,
+          "id": 121345,
+          "name": "Pomona College",
+          "score": 87.5
+        },
+        {
+          "rank": 10,
+          "id": 164465,
+          "name": "Amherst College",
+          "score": 87.3
+        }
+      ]
+    },
+    {
+      "id": "campus",
+      "name": "Campus life",
+      "top": [
+        {
+          "rank": 1,
+          "id": 121345,
+          "name": "Pomona College",
+          "score": 83.2
+        },
+        {
+          "rank": 2,
+          "id": 221999,
+          "name": "Vanderbilt University",
+          "score": 82.9
+        },
+        {
+          "rank": 3,
+          "id": 160755,
+          "name": "Tulane University of Louisiana",
+          "score": 79.6
+        },
+        {
+          "rank": 4,
+          "id": 227757,
+          "name": "Rice University",
+          "score": 79.2
+        },
+        {
+          "rank": 5,
+          "id": 170976,
+          "name": "University of Michigan-Ann Arbor",
+          "score": 77.9
+        },
+        {
+          "rank": 6,
+          "id": 190150,
+          "name": "Columbia University in the City of New York",
+          "score": 77.8
+        },
+        {
+          "rank": 7,
+          "id": 181002,
+          "name": "Creighton University",
+          "score": 77.6
+        },
+        {
+          "rank": 8,
+          "id": 234076,
+          "name": "University of Virginia-Main Campus",
+          "score": 77.4
+        },
+        {
+          "rank": 9,
+          "id": 199120,
+          "name": "University of North Carolina at Chapel Hill",
+          "score": 76.9
+        },
+        {
+          "rank": 10,
+          "id": 231624,
+          "name": "William & Mary",
+          "score": 76.7
+        }
+      ]
+    },
+    {
+      "id": "usnews",
+      "name": "U.S. News-style (approx.)",
+      "top": [
+        {
+          "rank": 1,
+          "id": 166683,
+          "name": "Massachusetts Institute of Technology",
+          "score": 98.4
+        },
+        {
+          "rank": 2,
+          "id": 186131,
+          "name": "Princeton University",
+          "score": 98.4
+        },
+        {
+          "rank": 3,
+          "id": 198419,
+          "name": "Duke University",
+          "score": 98.3
+        },
+        {
+          "rank": 4,
+          "id": 166027,
+          "name": "Harvard University",
+          "score": 98
+        },
+        {
+          "rank": 5,
+          "id": 162928,
+          "name": "Johns Hopkins University",
+          "score": 97.9
+        },
+        {
+          "rank": 6,
+          "id": 130794,
+          "name": "Yale University",
+          "score": 97.7
+        },
+        {
+          "rank": 7,
+          "id": 243744,
+          "name": "Stanford University",
+          "score": 97.6
+        },
+        {
+          "rank": 8,
+          "id": 217156,
+          "name": "Brown University",
+          "score": 97.4
+        },
+        {
+          "rank": 9,
+          "id": 144050,
+          "name": "University of Chicago",
+          "score": 97.4
+        },
+        {
+          "rank": 10,
+          "id": 215062,
+          "name": "University of Pennsylvania",
+          "score": 97.4
+        }
+      ]
+    }
+  ],
+  "usnewsSensitivity": {
+    "scenarios": [
+      "no grad rate",
+      "no sat",
+      "no research",
+      "no faculty pay",
+      "no teaching spend",
+      "add net price (w=5)"
+    ],
+    "rows": [
+      {
+        "id": 166683,
+        "name": "Massachusetts Institute of Technology",
+        "rank": 1,
+        "scenarios": {
+          "no grad rate": 1,
+          "no sat": 2,
+          "no research": 2,
+          "no faculty pay": 1,
+          "no teaching spend": 2,
+          "add net price (w=5)": 8
+        }
+      },
+      {
+        "id": 186131,
+        "name": "Princeton University",
+        "rank": 2,
+        "scenarios": {
+          "no grad rate": 2,
+          "no sat": 1,
+          "no research": 1,
+          "no faculty pay": 2,
+          "no teaching spend": 1,
+          "add net price (w=5)": 1
+        }
+      },
+      {
+        "id": 198419,
+        "name": "Duke University",
+        "rank": 3,
+        "scenarios": {
+          "no grad rate": 3,
+          "no sat": 3,
+          "no research": 3,
+          "no faculty pay": 3,
+          "no teaching spend": 3,
+          "add net price (w=5)": 19
+        }
+      },
+      {
+        "id": 166027,
+        "name": "Harvard University",
+        "rank": 4,
+        "scenarios": {
+          "no grad rate": 6,
+          "no sat": 4,
+          "no research": 4,
+          "no faculty pay": 5,
+          "no teaching spend": 4,
+          "add net price (w=5)": 7
+        }
+      },
+      {
+        "id": 162928,
+        "name": "Johns Hopkins University",
+        "rank": 5,
+        "scenarios": {
+          "no grad rate": 4,
+          "no sat": 5,
+          "no research": 5,
+          "no faculty pay": 4,
+          "no teaching spend": 5,
+          "add net price (w=5)": 6
+        }
+      },
+      {
+        "id": 130794,
+        "name": "Yale University",
+        "rank": 6,
+        "scenarios": {
+          "no grad rate": 7,
+          "no sat": 6,
+          "no research": 7,
+          "no faculty pay": 6,
+          "no teaching spend": 6,
+          "add net price (w=5)": 15
+        }
+      },
+      {
+        "id": 243744,
+        "name": "Stanford University",
+        "rank": 7,
+        "scenarios": {
+          "no grad rate": 5,
+          "no sat": 7,
+          "no research": 8,
+          "no faculty pay": 7,
+          "no teaching spend": 8,
+          "add net price (w=5)": 2
+        }
+      },
+      {
+        "id": 217156,
+        "name": "Brown University",
+        "rank": 8,
+        "scenarios": {
+          "no grad rate": 8,
+          "no sat": 8,
+          "no research": 6,
+          "no faculty pay": 8,
+          "no teaching spend": 7,
+          "add net price (w=5)": 17
+        }
+      },
+      {
+        "id": 144050,
+        "name": "University of Chicago",
+        "rank": 9,
+        "scenarios": {
+          "no grad rate": 9,
+          "no sat": 10,
+          "no research": 9,
+          "no faculty pay": 9,
+          "no teaching spend": 11,
+          "add net price (w=5)": 4
+        }
+      },
+      {
+        "id": 215062,
+        "name": "University of Pennsylvania",
+        "rank": 10,
+        "scenarios": {
+          "no grad rate": 11,
+          "no sat": 9,
+          "no research": 11,
+          "no faculty pay": 10,
+          "no teaching spend": 9,
+          "add net price (w=5)": 23
+        }
+      },
+      {
+        "id": 227757,
+        "name": "Rice University",
+        "rank": 11,
+        "scenarios": {
+          "no grad rate": 10,
+          "no sat": 12,
+          "no research": 10,
+          "no faculty pay": 11,
+          "no teaching spend": 12,
+          "add net price (w=5)": 3
+        }
+      },
+      {
+        "id": 147767,
+        "name": "Northwestern University",
+        "rank": 12,
+        "scenarios": {
+          "no grad rate": 12,
+          "no sat": 11,
+          "no research": 12,
+          "no faculty pay": 12,
+          "no teaching spend": 13,
+          "add net price (w=5)": 26
+        }
+      },
+      {
+        "id": 190415,
+        "name": "Cornell University",
+        "rank": 13,
+        "scenarios": {
+          "no grad rate": 13,
+          "no sat": 13,
+          "no research": 14,
+          "no faculty pay": 13,
+          "no teaching spend": 10,
+          "add net price (w=5)": 25
+        }
+      },
+      {
+        "id": 182670,
+        "name": "Dartmouth College",
+        "rank": 14,
+        "scenarios": {
+          "no grad rate": 15,
+          "no sat": 14,
+          "no research": 18,
+          "no faculty pay": 15,
+          "no teaching spend": 14,
+          "add net price (w=5)": 35
+        }
+      },
+      {
+        "id": 221999,
+        "name": "Vanderbilt University",
+        "rank": 15,
+        "scenarios": {
+          "no grad rate": 14,
+          "no sat": 15,
+          "no research": 19,
+          "no faculty pay": 14,
+          "no teaching spend": 15,
+          "add net price (w=5)": 5
+        }
+      }
+    ],
+    "biggestMoveTop50": {
+      "name": "Georgetown University",
+      "from": 29,
+      "to": 67,
+      "label": "add net price (w=5)"
+    }
+  },
+  "missingStrategies": {
+    "preset": "campus (clubs + reviews, no reviews loaded)",
+    "top50_overlap_penalize_neutral": 50,
+    "top50_overlap_neutral_renormalize": 43,
+    "top50_overlap_penalize_renormalize": 43,
+    "top50_with_known_club_count": {
+      "penalize": 50,
+      "neutral": 50,
+      "renormalize": 43
+    }
+  }
+}

@@ -11,11 +11,13 @@
     "test": "vitest run --passWithNoTests",
     "typecheck": "tsc -p packages/ranking-engine && tsc -p packages/dataset && pnpm --filter mobile typecheck",
     "lint": "pnpm --filter mobile lint",
-    "engine:bench": "bash scripts/bench-engine.sh"
+    "engine:bench": "bash scripts/bench-engine.sh",
+    "engine:report": "tsx packages/ranking-engine/scripts/report.ts"
   },
   "devDependencies": {
     "@types/node": "22.20.4",
     "fast-check": "4.10.2",
+    "tsx": "4.23.15",
     "typescript": "~6.0.3",
     "vitest": "4.1.11"
   }
