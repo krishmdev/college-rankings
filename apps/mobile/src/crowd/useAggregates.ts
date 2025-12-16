@@ -1,4 +1,11 @@
-import type { SchoolAggregates } from '@college/ranking-engine';
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
+
+import type { CrowdDimension, SchoolAggregates } from '@college/ranking-engine';
+import { CROWD_DIMENSIONS } from '@college/ranking-engine';
+
+import demo from './demoReviews.json';
+import { supabase } from './supabase';
 
 export type CrowdSource = 'none' | 'demo' | 'live';
 
@@ -7,8 +14,59 @@ export interface CrowdData {
   source: CrowdSource;
 }
 
-const EMPTY: CrowdData = { aggregates: new Map(), source: 'none' };
+export interface DemoReview {
+  id: number;
+  schoolId: number;
+  synthetic: true;
+  relationship: 'current_student' | 'recent_alum';
+  gradYear: number;
+  ratings: Record<CrowdDimension, number>;
+  title: string;
+  body: string;
+}
 
+export const DEMO_REVIEWS = (demo as { reviews: DemoReview[] }).reviews;
+
+function demoAggregates(): Map<number, SchoolAggregates> {
+  const sums = new Map<number, { n: number; sum: Record<CrowdDimension, number> }>();
+  for (const r of DEMO_REVIEWS) {
+    const cur = sums.get(r.schoolId) ?? { n: 0, sum: Object.fromEntries(CROWD_DIMENSIONS.map((d) => [d, 0])) as Record<CrowdDimension, number> };
+    cur.n++;
+    for (const d of CROWD_DIMENSIONS) cur.sum[d] += r.ratings[d];
+    sums.set(r.schoolId, cur);
+  }
+  const out = new Map<number, SchoolAggregates>();
+  for (const [id, { n, sum }] of sums) {
+    out.set(id, Object.fromEntries(CROWD_DIMENSIONS.map((d) => [d, { n, avg: sum[d] / n }])) as SchoolAggregates);
+  }
+  return out;
+}
+
+type AggregateRow = { school_id: number; n: number } & Record<CrowdDimension, number>;
+
+async function liveAggregates(): Promise<Map<number, SchoolAggregates>> {
+  const { data, error } = await supabase!.from('school_rating_aggregates').select('*');
+  if (error) throw error;
+  const out = new Map<number, SchoolAggregates>();
+  for (const row of data as AggregateRow[]) {
+    out.set(row.school_id, Object.fromEntries(CROWD_DIMENSIONS.map((d) => [d, { n: row.n, avg: row[d] }])) as SchoolAggregates);
+  }
+  return out;
+}
+
+const DEMO: CrowdData = { aggregates: demoAggregates(), source: 'demo' };
+
+/** Live aggregates when a backend is configured and reachable; otherwise the synthetic demo set. */
 export function useCrowdAggregates(): CrowdData {
-  return EMPTY;
+  const live = useQuery({
+    queryKey: ['aggregates'],
+    queryFn: liveAggregates,
+    enabled: supabase !== null,
+    staleTime: 5 * 60_000,
+    retry: 0,
+  });
+  return useMemo<CrowdData>(() => {
+    if (live.data) return { aggregates: live.data, source: 'live' };
+    return DEMO;
+  }, [live.data]);
 }

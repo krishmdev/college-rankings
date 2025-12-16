@@ -7,6 +7,8 @@ import type { Profile } from '@college/ranking-engine';
 import { METRIC_BY_KEY, METRICS, PRESETS, rank, rows } from '@college/ranking-engine';
 
 import { Button, Card, Divider, Screen, T } from '@/components/ui';
+import { supabase } from '@/crowd/supabase';
+import { useMembership, useSession } from '@/crowd/useSession';
 import { useRanking } from '@/data/RankingProvider';
 import { shareUrl, tokenFromInput } from '@/lib/shareLink';
 import { useProfileStore } from '@/state/profileStore';
@@ -71,6 +73,8 @@ export default function ProfilesScreen() {
   const [importText, setImportText] = useState('');
   const [copied, setCopied] = useState<string | null>(null);
   const url = shareUrl(profile);
+  const session = useSession();
+  const membership = useMembership(session);
 
   const presetTops = useMemo(
     () => Object.fromEntries(PRESETS.map((p) => [p.id, rows(rank(index, { ...p.profile, filters: {} }), 0, 3)])),
@@ -184,6 +188,26 @@ export default function ProfilesScreen() {
           </View>
 
           <View style={{ flex: 1, gap: space.md, width: '100%' }}>
+            <Card style={{ gap: space.sm }}>
+              <T variant="heading" serif>
+                Account
+              </T>
+              {supabase ? (
+                <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <T tone="secondary" variant="small" style={{ flex: 1 }}>
+                    {session ? session.user.email : 'Sign in with a school email to write reviews.'}
+                  </T>
+                  <Button label={session ? 'Account' : 'Sign in'} small kind="secondary" onPress={() => router.push('/sign-in')} />
+                  {membership.data?.role === 'moderator' || membership.data?.role === 'admin' ? (
+                    <Button label="Moderation" small kind="ghost" onPress={() => router.push('/moderation')} />
+                  ) : null}
+                </View>
+              ) : (
+                <T tone="muted" variant="small">
+                  Offline build: no backend, so reviews shown are synthetic demo data and sign-in is off.
+                </T>
+              )}
+            </Card>
             <T variant="heading" serif>
               Presets
             </T>

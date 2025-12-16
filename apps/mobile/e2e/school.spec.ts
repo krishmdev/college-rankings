@@ -32,3 +32,11 @@ test('an unknown id shows a not-found state', async ({ page }) => {
   await page.goto('./school/999999999');
   await expect(page.getByText('School not found')).toBeVisible();
 });
+
+test('offline reviews are labeled synthetic and feed the crowd weights', async ({ page }) => {
+  await page.goto('./school/104179'); // University of Arizona has 12 synthetic reviews
+  const card = page.getByTestId('reviews-card');
+  await expect(card).toContainText('Synthetic demo data');
+  await expect(card).toContainText('12 reviews');
+  await expect(card).not.toContainText('Write a review');
+});
