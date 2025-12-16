@@ -12,7 +12,10 @@
     "typecheck": "tsc -p packages/ranking-engine && tsc -p packages/dataset && pnpm --filter mobile typecheck",
     "lint": "pnpm --filter mobile lint",
     "engine:bench": "bash scripts/bench-engine.sh",
-    "engine:report": "tsx packages/ranking-engine/scripts/report.ts"
+    "engine:report": "tsx packages/ranking-engine/scripts/report.ts",
+    "export:web": "pnpm --filter mobile export:web",
+    "preview:web": "pnpm --filter mobile preview:web",
+    "e2e": "pnpm --filter mobile e2e"
   },
   "devDependencies": {
     "@types/node": "22.20.4",

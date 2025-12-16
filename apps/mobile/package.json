@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "copy-snapshot": "node scripts/copy-snapshot.mjs",
     "export:web": "node scripts/copy-snapshot.mjs && WEB_BASE_URL=${WEB_BASE_URL-/college-rankings} expo export -p web && node scripts/finish-export.mjs",
-    "preview:web": "node scripts/preview-subpath.mjs"
+    "preview:web": "node scripts/preview-subpath.mjs",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@college/dataset": "workspace:*",

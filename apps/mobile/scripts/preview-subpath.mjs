@@ -5,6 +5,8 @@ import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { egressCanary } from './egress-canary.mjs';
+
 const root = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'dist');
 const base = (process.env.WEB_BASE_URL ?? '/college-rankings').replace(/\/$/, '');
 const port = Number(process.env.PORT ?? 4173);
@@ -24,8 +26,13 @@ function send(res, file, status = 200) {
   createReadStream(file).pipe(res);
 }
 
-createServer((req, res) => {
+createServer(async (req, res) => {
   const url = new URL(req.url ?? '/', 'http://localhost');
+  // Test hook: report whether this server process can reach the internet.
+  if (process.env.EGRESS_CANARY === '1' && url.pathname === '/__egress') {
+    res.writeHead(200, { 'content-type': 'application/json' });
+    return res.end(JSON.stringify(await egressCanary()));
+  }
   if (base && !url.pathname.startsWith(base)) {
     res.writeHead(302, { location: `${base}/` });
     return res.end();

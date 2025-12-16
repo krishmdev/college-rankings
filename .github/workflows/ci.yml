@@ -32,3 +32,23 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm export:web
+      # Runtime phase: the preview server, Playwright and the browser all run in a container with
+      # no network except loopback. The egress spec fails if the server can reach the internet.
+      - name: e2e with --network none
+        run: |
+          docker run --rm --network none --ipc host \
+            -v "$PWD:/w" -w /w/apps/mobile \
+            -e CI=1 -e EXPECT_OFFLINE=1 -e EGRESS_CANARY=1 \
+            mcr.microsoft.com/playwright:v1.63.0-noble npx playwright test
