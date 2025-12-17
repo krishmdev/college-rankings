@@ -41,7 +41,7 @@ canary:
 	node apps/mobile/scripts/egress-canary.mjs open
 	$(OFFLINE_RUN) node apps/mobile/scripts/egress-canary.mjs blocked
 
-# Rebuilds the snapshot from the public sources (network, ~130 MB download the first time).
+# Rebuilds the snapshot from the public sources (network, about 32 MB of downloads the first time).
 etl:
 	cd etl && uv run college-etl build
 

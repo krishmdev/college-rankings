@@ -293,6 +293,17 @@ def check_herd() -> None:
     console.print(f"{len(joined.unresolved)} unresolved")
 
 
+@app.command("seed-sql")
+def seed_sql_cmd() -> None:
+    """Write supabase/seed.sql (schools + email domains) from the published snapshot."""
+    from .config import REPO_ROOT
+    from .seed import seed_sql
+
+    out = REPO_ROOT / "supabase" / "seed.sql"
+    out.write_text(seed_sql(DATASET_PKG / "snapshot.json", CROSSWALKS / "school_domains_extra.csv"))
+    console.print(f"wrote {out}")
+
+
 def main() -> None:
     app()
 
