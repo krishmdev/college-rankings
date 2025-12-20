@@ -15,11 +15,14 @@
     "engine:report": "tsx packages/ranking-engine/scripts/report.ts",
     "export:web": "pnpm --filter mobile export:web",
     "preview:web": "pnpm --filter mobile preview:web",
-    "e2e": "pnpm --filter mobile e2e"
+    "e2e": "pnpm --filter mobile e2e",
+    "supabase": "supabase",
+    "supabase:test": "bash scripts/supabase-test.sh"
   },
   "devDependencies": {
     "@types/node": "22.20.4",
     "fast-check": "4.10.2",
+    "supabase": "2.117.0",
     "tsx": "4.23.15",
     "typescript": "~6.0.3",
     "vitest": "4.1.11"
