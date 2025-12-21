@@ -1,0 +1,26 @@
+{
+  "recorded_at_utc": "2025-12-24T03:40:10Z",
+  "command": "PORTFOLIO_TOOLS=<shared-tools> pnpm supabase:test",
+  "exit_code": 0,
+  "git_head_at_run": "44727cd1ed08fe272983b8ff649d6a2c7de073f9",
+  "supabase_cli": "2.117.0",
+  "pg_tap_tests_passed": 47,
+  "auth_integration_tests_passed": 9,
+  "local_stack_stopped": true,
+  "log_redaction": "checkout path prefix only",
+  "log_sha256": "95b6cda435754b2207773696b037b698ac0d85e7bf4db1f7db9a669253109da5",
+  "source_sha256": "5e509074b0ccd726cfead9d1987f9613f890087e92273af59322529e96a2f034",
+  "source_files_sha256": {
+    "package.json": "97b8583090dd0ff2d3aad629e1e4e24359593f64f8fbb816c9771b4390408834",
+    "pnpm-lock.yaml": "30dd657d8665c1aa1187b0a71d9a2c9a439f1d69a0fbac4b247030aaed4d987f",
+    "scripts/supabase-test.sh": "3257bf3c08fa983edbcf9b8cf9026f6372228ba9170a6f4cb2e4585532732649",
+    "supabase/config.toml": "e0151789023db548ed7765c40981f776573ea49acd2630a20a44b84eaf8b6044",
+    "supabase/integration/auth-flow.test.mjs": "5b2cfeb47f3a62c30598f5a9ef59d15b01b8d0b53ba32ca09154083ad8bf0b3c",
+    "supabase/migrations/20251223120000_schools_and_affiliations.sql": "ef36964698b2d7cd53c85dd89dcb7c3bdcd47a2019a1dd2670257aa379f79fb6",
+    "supabase/migrations/20251223120100_reviews.sql": "975dc2328e71ed7718b686f698a45a901cb0557df5440e4f42c86e56b4a5bad2",
+    "supabase/seed.sql": "9c7568a1b8b021a424776ee1ce9b5ac151a582daf5683b9e4240c5a57227c450",
+    "supabase/templates/email_change.html": "a7eb170d44faf367185b9bdf3139aca029b09b1d60dfe026729590fda4d66839",
+    "supabase/templates/otp.html": "ee474d5897122f26561a35cfbc0c3b74502b8f9ba29087abf36ec95247795433",
+    "supabase/tests/affiliations_test.sql": "87c72a94f182e0be166a65463fc8e7d16a794a6e712635b44b8a0468f3f8ea5a"
+  }
+}
