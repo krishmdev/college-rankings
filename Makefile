@@ -1,5 +1,7 @@
 # Two-phase contract: `make setup` needs the network; everything after it runs offline.
-OFFLINE_RUN ?= $(HOME)/Developer/portfolio/.tools/offline-run
+# OFFLINE_RUN: a wrapper that runs a command with outbound network denied (e.g. a sandbox-exec
+# profile on macOS). Set it in the environment; the offline targets refuse to run without it.
+OFFLINE_RUN ?=
 
 .PHONY: setup models test lint typecheck web export e2e e2e-offline demo canary etl bench report
 
@@ -35,9 +37,11 @@ e2e: export
 	pnpm e2e
 
 e2e-offline: export
+	@test -n "$(OFFLINE_RUN)" || (echo "set OFFLINE_RUN to a network-denying wrapper" && exit 1)
 	cd apps/mobile && $(OFFLINE_RUN) env CI=1 EXPECT_OFFLINE=1 EGRESS_CANARY=1 npx playwright test
 
 canary:
+	@test -n "$(OFFLINE_RUN)" || (echo "set OFFLINE_RUN to a network-denying wrapper" && exit 1)
 	node apps/mobile/scripts/egress-canary.mjs open
 	$(OFFLINE_RUN) node apps/mobile/scripts/egress-canary.mjs blocked
 
