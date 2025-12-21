@@ -1,7 +1,7 @@
 -- Affiliation lifecycle, email policy, and RLS. Run with `supabase test db`.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(47);
+select plan(58);
 
 create function pg_temp.as_user(uid uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, true);
@@ -137,13 +137,45 @@ select pg_temp.as_admin();
 select is((select status from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'), 'flagged',
   'three distinct reports flag a review');
 
+-- A person's decision survives the author's edits.
+select pg_temp.as_user('22222222-2222-2222-2222-222222222222');
+select lives_ok(
+  $$update public.reviews set body = body || ' Edited to look innocent, with nothing new in it.' where author_id = auth.uid()$$,
+  'author can still edit a reported review');
+select pg_temp.as_admin();
+select is((select status from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'), 'flagged',
+  'a review flagged by reports stays flagged after an author edit');
+select pg_temp.as_user('22222222-2222-2222-2222-222222222222');
+select throws_ok(
+  format('insert into public.review_reports (review_id, reason) values (%s, %L)',
+    (select id from public.reviews where author_id = auth.uid()), 'self report'),
+  '42501', null, 'reports can only target published reviews');
+select pg_temp.as_admin();
+
+-- One account per mailbox: plus-addressed aliases are the same person.
+select throws_ok(
+  $$select pg_temp.new_user('55555555-5555-5555-5555-555555555555', 'C+alt@umich.edu', true)$$,
+  '23505', null, 'a plus-addressed alias of an existing account is refused');
+
 -- Aggregates count only published reviews
 select pg_temp.as_user('33333333-3333-3333-3333-333333333333');
 select lives_ok(pg_temp.review_sql(170976), 'another verified student reviews');
 set local role anon;
 select is((select n from public.school_rating_aggregates where school_id = 170976), 1, 'aggregates count published reviews only');
-select is((select count(*)::integer from public.reviews where school_id = 170976), 1, 'anon sees only the published review');
+select is((select count(*)::integer from public.public_reviews where school_id = 170976), 1, 'anon sees only the published review');
+select throws_ok($$select author_id from public.reviews$$, '42501', null, 'anon cannot read the reviews table');
 reset role;
+select hasnt_column('public', 'public_reviews', 'author_id', 'the public view has no author id');
+
+-- Authors withdraw instead of deleting.
+select pg_temp.as_user('33333333-3333-3333-3333-333333333333');
+select throws_ok($$delete from public.reviews where author_id = auth.uid()$$, '42501', null, 'authors cannot hard-delete');
+select lives_ok(
+  format('select public.withdraw_review(%s)', (select id from public.reviews where author_id = auth.uid())),
+  'authors can withdraw');
+select throws_ok(pg_temp.review_sql(170976, 'Posting again'), '23505', null, 'a withdrawn review still holds the one-per-school slot');
+select pg_temp.as_admin();
+select is((select status from public.reviews where author_id = '33333333-3333-3333-3333-333333333333'), 'withdrawn', 'withdrawn, not deleted');
 
 -- Unmapping a domain later leaves existing affiliations alone (admins revoke explicitly).
 delete from public.school_domains where domain = 'umich.edu';
@@ -153,6 +185,9 @@ select pg_temp.as_user('44444444-4444-4444-4444-444444444444');
 select lives_ok($$select public.admin_revoke_affiliation('33333333-3333-3333-3333-333333333333', 'domain retired')$$, 'admin can revoke');
 select pg_temp.as_admin();
 select is(pg_temp.status('33333333-3333-3333-3333-333333333333'), null, 'revoked by admin');
+insert into public.school_domains (domain, school_id) values ('umich.edu', 170976);
+update auth.users set email = 'c.alias@umich.edu' where id = '33333333-3333-3333-3333-333333333333';
+select is(pg_temp.status('33333333-3333-3333-3333-333333333333'), null, 'an admin revoke survives a later email change');
 
 select * from finish();
 rollback;

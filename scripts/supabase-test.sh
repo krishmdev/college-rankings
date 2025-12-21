@@ -29,7 +29,8 @@ body() {
     SUPABASE_URL="$SB_API_URL" SUPABASE_ANON_KEY="$SB_ANON_KEY" SUPABASE_SERVICE_KEY="$SB_SERVICE_ROLE_KEY" \
       MAILPIT_URL="$SB_MAIL_URL" \
       node --test supabase/integration/auth-flow.test.mjs 2>&1
-  } | tee "$out"
+  } 2>&1 | sed "s|$PWD/||g" | tee "$out"
+  python3 scripts/supabase-manifest.py "$out"
 }
 export -f body; export out
 

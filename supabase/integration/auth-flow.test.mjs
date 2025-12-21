@@ -100,6 +100,23 @@ describe('school-email accounts', () => {
     assert.deepEqual((await affiliations(userId)).map((a) => [a.school_id, a.status]), [[164988, 'active']]);
   });
 
+  test('a plus-addressed alias of an existing account cannot sign up', async () => {
+    const alias = alice.replace('@', '+second@');
+    const { error } = await client().auth.signInWithOtp({ email: alias });
+    assert.ok(error, 'alias signup must fail');
+    const { data } = await admin.auth.admin.listUsers({ perPage: 1000 });
+    assert.ok(!data.users.some((u) => u.email === alias));
+  });
+
+  test('anon reads reviews without author ids', async () => {
+    const c = client();
+    const table = await c.from('reviews').select('author_id').limit(1);
+    assert.ok(table.error, 'the reviews table is not readable by anon');
+    const view = await c.from('public_reviews').select('*').limit(1);
+    assert.ifError(view.error);
+    for (const row of view.data) assert.ok(!('author_id' in row));
+  });
+
   test('an unconfirmed password account cannot get a session at all', async () => {
     const email = `pending.${run}@bu.edu`;
     const { error: ce } = await admin.auth.admin.createUser({ email, password: 'correct-horse-battery', email_confirm: false });
