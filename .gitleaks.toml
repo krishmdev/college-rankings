@@ -1,0 +1,10 @@
+# Default rules, plus one narrow allowlist: result manifests record sha256 hashes of source files,
+# and a file named auth-flow.test.mjs makes the generic-api-key rule read the hash as a key.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "sha256 file hashes in result manifests"
+paths = ['''docs/results/.*manifest\.json''']
+regexes = ['''^[0-9a-f]{64}$''']
+condition = "AND"
