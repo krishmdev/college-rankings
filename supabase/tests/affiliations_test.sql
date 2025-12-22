@@ -124,15 +124,16 @@ select is((select status from public.reviews where author_id = '22222222-2222-22
 select pg_temp.new_user('33333333-3333-3333-3333-333333333333', 'c@umich.edu', true);
 select pg_temp.new_user('44444444-4444-4444-4444-444444444444', 'd@umich.edu', true);
 select pg_temp.as_user('33333333-3333-3333-3333-333333333333');
-select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'$$, 'report accepted');
+-- Other users find the review through the public view (the table only shows your own reviews).
+select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.public_reviews where school_id = 170976$$, 'report accepted');
 select throws_ok(
   format('insert into public.review_reports (review_id, reason) values (%s, %L)',
-    (select id from public.reviews where author_id = '22222222-2222-2222-2222-222222222222' and status = 'published'), 'spam again'),
+    (select id from public.public_reviews where school_id = 170976), 'spam again'),
   '23505', null, 'one report per person per review');
 select pg_temp.as_user('44444444-4444-4444-4444-444444444444');
-select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.reviews where author_id = '22222222-2222-2222-2222-222222222222' and status = 'published'$$, 'report accepted');
+select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.public_reviews where school_id = 170976$$, 'report accepted');
 select pg_temp.as_user('11111111-1111-1111-1111-111111111111');
-select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.reviews where author_id = '22222222-2222-2222-2222-222222222222' and status = 'published'$$, 'report accepted');
+select lives_ok($$insert into public.review_reports (review_id, reason) select id, 'spam' from public.public_reviews where school_id = 170976$$, 'report accepted');
 select pg_temp.as_admin();
 select is((select status from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'), 'flagged',
   'three distinct reports flag a review');
