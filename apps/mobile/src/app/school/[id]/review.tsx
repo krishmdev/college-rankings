@@ -55,7 +55,18 @@ export default function WriteReview() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  if (!supabase || !school) return <Screen><EmptyState title="Reviews need the backend" /></Screen>;
+  if (!supabase || !school) {
+    return (
+      <Screen>
+        <Stack.Screen options={{ title: 'Write a review' }} />
+        <EmptyState
+          title="Reviews are off in this offline demo"
+          body="Writing reviews needs the review server and a verified school email. The reviews you see here are synthetic examples."
+          action={<Button label="Back to school" kind="secondary" onPress={() => (router.canGoBack() ? router.back() : router.replace({ pathname: '/school/[id]', params: { id: String(id) } }))} />}
+        />
+      </Screen>
+    );
+  }
   const complete = CROWD_DIMENSIONS.every((d) => ratings[d] > 0) && title.trim().length >= 3 && body.trim().length >= 50 && /^20\d\d$/.test(gradYear);
   const input = { borderWidth: 1, borderColor: c.hairline, borderRadius: radius.md, padding: space.md, color: c.ink, backgroundColor: c.surfaceRaised, fontSize: 15 } as const;
 

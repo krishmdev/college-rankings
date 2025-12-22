@@ -58,7 +58,7 @@ export const SchoolRow = memo(function SchoolRow({ row, compact }: { row: RowDat
           }}>
           {row.rank}
         </Text>
-        <ScoreRing score={row.score} size={compact ? 38 : 44} />
+        <ScoreRing score={row.score} size={compact ? 40 : 46} />
         <View style={{ flex: 1, gap: 4, minWidth: 0 }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
             <Text
@@ -74,11 +74,12 @@ export const SchoolRow = memo(function SchoolRow({ row, compact }: { row: RowDat
           <ContributionChips items={compact ? row.top.slice(0, 2) : row.top} />
         </View>
         {row.all ? (
-          <View style={{ width: 220, gap: 4 }}>
-            <ContributionBar items={row.all} height={10} />
-            <Text style={{ fontSize: 11, color: c.inkMuted }}>
-              {row.all.length} metrics · {Math.round(row.coverage * 100)}% measured
-            </Text>
+          <View style={{ width: 300 }}>
+            <ContributionBar
+              items={row.all}
+              height={12}
+              caption={`${row.all.length} metrics · ${Math.round(row.coverage * 100)}% measured · hover for detail`}
+            />
           </View>
         ) : null}
       </Pressable>

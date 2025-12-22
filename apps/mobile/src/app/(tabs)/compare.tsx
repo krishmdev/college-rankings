@@ -15,7 +15,7 @@ import { radius, space } from '@/theme/tokens';
 import { useLayout } from '@/theme/useLayout';
 import { useTheme } from '@/theme/useTheme';
 
-function AddSchool() {
+function AddSchool({ full }: { full?: boolean }) {
   const c = useTheme();
   const { index, result } = useRanking();
   const ids = useCompareStore((s) => s.ids);
@@ -31,7 +31,7 @@ function AddSchool() {
   }, [q, index, ids]);
   if (ids.length >= MAX_COMPARE) return <T tone="muted" variant="small">Comparing the maximum of {MAX_COMPARE} schools.</T>;
   return (
-    <View style={{ gap: space.xs, maxWidth: 420 }}>
+    <View style={{ gap: space.xs, maxWidth: full ? undefined : 420, alignSelf: full ? 'stretch' : undefined, width: full ? '100%' : undefined }}>
       <SearchBox value={q} onChange={setQ} placeholder="Add a school to compare" />
       {matches.map((s) => {
         const i = index.idToIdx.get(s.id)!;
@@ -63,18 +63,6 @@ function AddSchool() {
   );
 }
 
-function Row({ label, labelW, children, strong }: { label: string; labelW: number; children: React.ReactNode; strong?: boolean }) {
-  const c = useTheme();
-  return (
-    <View style={{ flexDirection: 'row', borderTopWidth: 1, borderTopColor: strong ? c.baseline : c.hairline, alignItems: 'center' }}>
-      <View style={{ width: labelW, paddingVertical: space.sm, paddingRight: space.sm }}>
-        <Text style={{ color: c.inkSecondary, fontSize: 13, fontWeight: strong ? '600' : '400' }}>{label}</Text>
-      </View>
-      {children}
-    </View>
-  );
-}
-
 export default function CompareScreen() {
   const c = useTheme();
   const router = useRouter();
@@ -83,8 +71,6 @@ export default function CompareScreen() {
   const ids = useCompareStore((s) => s.ids);
   const remove = useCompareStore((s) => s.remove);
   const idxs = ids.map((id) => index.idToIdx.get(id)).filter((i): i is number => i !== undefined);
-  const colW = wide ? 220 : 150;
-  const labelW = wide ? 240 : 150;
 
   if (idxs.length === 0) {
     return (
@@ -96,32 +82,141 @@ export default function CompareScreen() {
           <EmptyState
             title="Nothing to compare yet"
             body="Add up to four schools here, or use “Add to compare” on any school page."
-            action={<AddSchool />}
+            action={<AddSchool full />}
           />
         </View>
       </Screen>
     );
   }
 
+  // "Best" only when it's clearly best: at least 5 percentile points ahead of the runner-up.
   const bestOf = (key: MetricKey): number | null => {
+    if (idxs.length < 2) return null;
     const m = METRICS.find((x) => x.key === key)!;
     const dir = m.direction === 'preference' ? (profile.directions[key] ?? m.defaultDirection) : m.direction;
-    let best: number | null = null;
-    let bestV = 0;
-    for (const i of idxs) {
-      const s = index.schools[i]!;
-      if (s.flags?.[key] === 'imputed_zero' || s.flags?.[key] === 'reported_with_parent') continue;
-      const v = s.values[key];
-      if (v === null || v === undefined) continue;
-      if (best === null || (dir === 'lower' ? v < bestV : v > bestV)) {
-        best = i;
-        bestV = v;
-      }
-    }
-    return idxs.length > 1 ? best : null;
+    const k = index.metricIndex.get(key)!;
+    const scored = idxs
+      .filter((i) => !['imputed_zero', 'reported_with_parent'].includes(index.schools[i]!.flags?.[key] ?? ''))
+      .map((i) => ({ i, p: index.pct[k]![i]! }))
+      .filter((x) => !Number.isNaN(x.p))
+      .map((x) => ({ i: x.i, s: dir === 'lower' ? 1 - x.p : x.p }))
+      .sort((a, b) => b.s - a.s);
+    if (scored.length < 2) return null;
+    return scored[0]!.s - scored[1]!.s >= 0.05 ? scored[0]!.i : null;
   };
 
-  const cell = { width: colW, paddingVertical: space.sm, paddingHorizontal: space.sm } as const;
+  type RowSpec = { key: string; label: string; height: number; cell: (i: number) => React.ReactNode; strong?: boolean; group?: string };
+  const rowsSpec: RowSpec[] = [
+    {
+      key: 'rank',
+      label: 'Rank for you',
+      height: 48,
+      strong: true,
+      cell: (i) => (
+        <T bold num serif variant="heading">
+          {result.rankOf[i] ? `#${result.rankOf[i]}` : 'filtered out'}
+        </T>
+      ),
+    },
+    {
+      key: 'score',
+      label: 'Score',
+      height: 56,
+      cell: (i) => (
+        <View style={{ gap: 6, alignSelf: 'stretch' }}>
+          <T bold num>
+            {Number.isNaN(result.score[i]!) ? '—' : score1(result.score[i]!)}
+          </T>
+          {result.rankOf[i] ? <ContributionBar items={contributions(result, i).sort((a, b) => b.points - a.points)} height={8} /> : null}
+        </View>
+      ),
+    },
+    { key: 'ug', label: 'Undergraduates', height: 44, cell: (i) => <T num variant="small">{intFormat.format(index.schools[i]!.ugSize)}</T> },
+  ];
+  for (const g of GROUPS.filter((x) => x.key !== 'crowd')) {
+    rowsSpec.push({ key: `g-${g.key}`, label: g.label, height: 36, group: g.key, cell: () => null });
+    for (const m of METRICS.filter((x) => x.group === g.key && x.key !== 'undergrad_size')) {
+      const best = bestOf(m.key);
+      rowsSpec.push({
+        key: m.key,
+        label: m.label,
+        height: 48,
+        cell: (i) => {
+          const s = index.schools[i]!;
+          const parentId = s.reportedWith?.[m.key];
+          const isBest = best === i;
+          return (
+            <View
+              accessibilityLabel={isBest ? `${m.label}: best of these` : undefined}
+              style={isBest ? { backgroundColor: c.accentWash, borderRadius: radius.sm, paddingHorizontal: 6, paddingVertical: 2 } : null}>
+              <T num bold={isBest} variant="small" tone={s.values[m.key] == null && !s.flags?.[m.key] ? 'muted' : 'primary'}>
+                {formatFlagged(m.key, s.values[m.key], s.flags?.[m.key], parentId ? schoolById(parentId)?.name : undefined)}
+                {isBest ? ' · best' : ''}
+              </T>
+            </View>
+          );
+        },
+      });
+    }
+  }
+
+  const headerH = 96;
+  const labelW = wide ? 240 : 124;
+  const colW = wide ? undefined : 150;
+  const rowBorder = (strong?: boolean) => ({ borderTopWidth: 1, borderTopColor: strong ? c.baseline : c.hairline });
+
+  const labelColumn = (
+    <View style={{ width: labelW }}>
+      <View style={{ height: headerH }} />
+      {rowsSpec.map((r) =>
+        r.group ? (
+          <View key={r.key} style={{ height: r.height, flexDirection: 'row', alignItems: 'flex-end', gap: space.sm, paddingBottom: 6 }}>
+            <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: c.group[r.group as keyof typeof c.group] }} />
+            <T variant="label" tone="secondary">
+              {r.label}
+            </T>
+          </View>
+        ) : (
+          <View key={r.key} role="rowheader" style={[{ height: r.height, justifyContent: 'center', paddingRight: space.sm }, rowBorder(r.strong)]}>
+            <Text numberOfLines={2} style={{ color: c.inkSecondary, fontSize: wide ? 13 : 12, fontWeight: r.strong ? '600' : '400' }}>
+              {r.label}
+            </Text>
+          </View>
+        ),
+      )}
+    </View>
+  );
+
+  const schoolColumns = idxs.map((i) => {
+    const s = index.schools[i]!;
+    return (
+      <View key={s.id} style={{ width: colW, flex: wide ? 1 : undefined, paddingHorizontal: space.sm }}>
+        <View role="columnheader" style={{ height: headerH, justifyContent: 'flex-end', gap: 3, paddingBottom: space.sm }}>
+          <Pressable accessibilityRole="link" onPress={() => router.push({ pathname: '/school/[id]', params: { id: String(s.id) } })}>
+            <Text style={{ fontFamily: 'Fraunces_600SemiBold', fontSize: wide ? 16 : 14, color: c.ink }} numberOfLines={2}>
+              {s.name}
+            </Text>
+          </Pressable>
+          <Text style={{ fontSize: 12, color: c.inkSecondary }} numberOfLines={1}>
+            {s.city}, {s.state}
+          </Text>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${s.name}`} onPress={() => remove(s.id)}>
+            <Text style={{ fontSize: 12, color: c.accent, fontWeight: '600' }}>Remove</Text>
+          </Pressable>
+        </View>
+        {rowsSpec.map((r) =>
+          r.group ? (
+            <View key={r.key} style={{ height: r.height }} />
+          ) : (
+            <View key={r.key} role="cell" style={[{ height: r.height, justifyContent: 'center', alignItems: 'flex-start' }, rowBorder(r.strong)]}>
+              {r.cell(i)}
+            </View>
+          ),
+        )}
+      </View>
+    );
+  });
+
   return (
     <Screen>
       <View style={{ gap: space.lg }}>
@@ -130,95 +225,22 @@ export default function CompareScreen() {
             Compare
           </T>
           <T tone="secondary" variant="small">
-            Values from the snapshot; the best in each row is highlighted. Rank and score use your current weights.
+            Values from the snapshot. “Best” marks a clear leader in a row (5+ percentile points ahead). Rank and score use your
+            current weights.
           </T>
         </View>
         <AddSchool />
-        <Card style={{ padding: 0, overflow: 'hidden' }}>
-          <ScrollView horizontal contentContainerStyle={{ padding: space.lg }}>
-            <View testID="compare-table">
-              <View style={{ flexDirection: 'row', alignItems: 'flex-end' }}>
-                <View style={{ width: labelW }} />
-                {idxs.map((i) => {
-                  const s = index.schools[i]!;
-                  return (
-                    <View key={s.id} style={[cell, { gap: 4 }]}>
-                      <Pressable accessibilityRole="link" onPress={() => router.push({ pathname: '/school/[id]', params: { id: String(s.id) } })}>
-                        <Text style={{ fontFamily: 'Fraunces_600SemiBold', fontSize: 16, color: c.ink }} numberOfLines={2}>
-                          {s.name}
-                        </Text>
-                      </Pressable>
-                      <Text style={{ fontSize: 12, color: c.inkMuted }}>
-                        {s.city}, {s.state}
-                      </Text>
-                      <Pressable accessibilityRole="button" accessibilityLabel={`Remove ${s.name}`} onPress={() => remove(s.id)}>
-                        <Text style={{ fontSize: 12, color: c.accent, fontWeight: '600' }}>Remove</Text>
-                      </Pressable>
-                    </View>
-                  );
-                })}
-              </View>
-              <Row labelW={labelW} label="Rank for you" strong>
-                {idxs.map((i) => (
-                  <View key={i} style={cell}>
-                    <T bold num serif variant="heading">
-                      {result.rankOf[i] ? `#${result.rankOf[i]}` : 'filtered out'}
-                    </T>
-                  </View>
-                ))}
-              </Row>
-              <Row labelW={labelW} label="Score">
-                {idxs.map((i) => (
-                  <View key={i} style={[cell, { gap: 6 }]}>
-                    <T bold num>
-                      {Number.isNaN(result.score[i]!) ? '—' : score1(result.score[i]!)}
-                    </T>
-                    {result.rankOf[i] ? <ContributionBar items={contributions(result, i).sort((a, b) => b.points - a.points)} height={8} /> : null}
-                  </View>
-                ))}
-              </Row>
-              <Row labelW={labelW} label="Undergraduates">
-                {idxs.map((i) => (
-                  <View key={i} style={cell}>
-                    <T num>{intFormat.format(index.schools[i]!.ugSize)}</T>
-                  </View>
-                ))}
-              </Row>
-              {GROUPS.filter((g) => g.key !== 'crowd').map((g) => (
-                <View key={g.key}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingTop: space.lg, paddingBottom: space.xs }}>
-                    <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: c.group[g.key] }} />
-                    <T variant="label" tone="secondary">
-                      {g.label}
-                    </T>
-                  </View>
-                  {METRICS.filter((m) => m.group === g.key && m.key !== 'undergrad_size').map((m) => {
-                    const best = bestOf(m.key);
-                    return (
-                      <Row key={m.key} labelW={labelW} label={m.label}>
-                        {idxs.map((i) => {
-                          const s = index.schools[i]!;
-                          const isBest = best === i;
-                          const parentId = s.reportedWith?.[m.key];
-                          return (
-                            <View
-                              key={i}
-                              accessibilityLabel={isBest ? `${m.label}: best of these` : undefined}
-                              style={[cell, isBest ? { backgroundColor: c.accentWash, borderRadius: radius.sm } : null]}>
-                              <T num bold={isBest} tone={s.values[m.key] == null && !s.flags?.[m.key] ? 'muted' : 'primary'} variant="small">
-                                {formatFlagged(m.key, s.values[m.key], s.flags?.[m.key], parentId ? schoolById(parentId)?.name : undefined)}
-                                {isBest ? '  best' : ''}
-                              </T>
-                            </View>
-                          );
-                        })}
-                      </Row>
-                    );
-                  })}
-                </View>
-              ))}
-            </View>
-          </ScrollView>
+        <Card style={{ padding: wide ? space.lg : space.sm, overflow: 'hidden' }}>
+          <View testID="compare-table" role="table" accessibilityLabel="School comparison" style={{ flexDirection: 'row' }}>
+            {labelColumn}
+            {wide ? (
+              <View style={{ flex: 1, flexDirection: 'row' }}>{schoolColumns}</View>
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator contentContainerStyle={{ flexDirection: 'row' }}>
+                {schoolColumns}
+              </ScrollView>
+            )}
+          </View>
         </Card>
       </View>
     </Screen>

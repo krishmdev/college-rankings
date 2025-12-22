@@ -27,7 +27,7 @@ export function PercentileBar({ p, height = 8, label }: { p: number | null; heig
         <View style={{ width: `${pct * 100}%`, height: '100%', backgroundColor: c.pctFill, borderRadius: height / 2 }} />
       ) : null}
       <View
-        style={{ position: 'absolute', left: '50%', top: 0, bottom: 0, width: 1.5, backgroundColor: c.surface }}
+        style={{ position: 'absolute', left: '50%', marginLeft: -1, top: 0, bottom: 0, width: 2, backgroundColor: c.ink, opacity: 0.45 }}
       />
     </View>
   );

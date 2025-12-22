@@ -19,7 +19,8 @@ export function formatMetric(key: MetricKey, v: number | null | undefined, compa
     case 'percent':
       return `${one.format(v * 100)}%`;
     case 'usd':
-      if (key === 'faculty_salary') return `$${int.format(v)}/mo`;
+      // Scorecard reports a monthly average; shown per year (x12) so it reads like a salary.
+      if (key === 'faculty_salary') return `${usdCompact(v * 12)}/yr`;
       return compact || Math.abs(v) >= 1e6 ? usdCompact(v) : `$${int.format(v)}`;
     case 'count':
       return int.format(v);

@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { View } from 'react-native';
 
 import { Button, Card, EmptyState, Screen, T } from '@/components/ui';
@@ -11,6 +11,7 @@ import { space } from '@/theme/tokens';
 type Queued = { id: number; school_id: number; title: string; body: string; status: string; moderation_reason: string | null };
 
 export default function Moderation() {
+  const router = useRouter();
   const session = useSession();
   const membership = useMembership(session);
   const qc = useQueryClient();
@@ -25,7 +26,18 @@ export default function Moderation() {
       return data as Queued[];
     },
   });
-  if (!supabase || !allowed) return <Screen><Stack.Screen options={{ title: 'Moderation' }} /><EmptyState title="Moderators only" /></Screen>;
+  if (!supabase || !allowed) {
+    return (
+      <Screen>
+        <Stack.Screen options={{ title: 'Moderation' }} />
+        <EmptyState
+          title="Moderators only"
+          body={supabase ? 'Your account doesn’t have the moderator role.' : 'Moderation needs the review server, which this offline demo doesn’t connect to.'}
+          action={<Button label="Back to rankings" kind="secondary" onPress={() => router.replace('/')} />}
+        />
+      </Screen>
+    );
+  }
 
   const act = async (id: number, action: 'publish' | 'remove') => {
     await supabase!.rpc('moderate_review', { review_id: id, action, reason: action === 'remove' ? 'removed by moderator' : null });

@@ -37,10 +37,9 @@ test('a net price cap shrinks the list', async ({ page }) => {
   await openControls(page);
   await page.getByTestId('price-cap-15000').click();
   await closeControls(page);
-  const text = await page.getByTestId('rank-summary').textContent();
-  const n = Number(text!.replace(/,/g, '').match(/\d+/)![0]);
-  expect(n).toBeLessThan(1532);
-  expect(n).toBeGreaterThan(100);
+  const count = async () => Number((await page.getByTestId('rank-summary').textContent())!.replace(/,/g, '').match(/\d+/)![0]);
+  await expect.poll(count).toBeLessThan(1532);
+  expect(await count()).toBeGreaterThan(100);
 });
 
 test('search narrows the list but keeps real ranks', async ({ page }) => {

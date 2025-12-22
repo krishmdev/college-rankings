@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { Text, View } from 'react-native';
 
-import { bayesianAverage, CROWD_DIMENSIONS, MIN_REVIEWS } from '@college/ranking-engine';
+import { CROWD_DIMENSIONS, MIN_REVIEWS } from '@college/ranking-engine';
 
 import { useCrowdAggregates } from '@/crowd/useAggregates';
 import { useReviews } from '@/crowd/useReviews';
@@ -24,10 +24,14 @@ const DIM_LABEL: Record<string, string> = {
 
 function Stars({ value }: { value: number }) {
   const c = useTheme();
+  const halves = Math.round(value * 2);
+  const full = Math.floor(halves / 2);
+  const half = halves % 2 === 1;
   return (
-    <Text accessibilityLabel={`${value} out of 5`} style={{ color: c.accent, fontSize: 13, letterSpacing: 1 }}>
-      {'●'.repeat(Math.round(value))}
-      <Text style={{ color: c.pctTrack }}>{'●'.repeat(5 - Math.round(value))}</Text>
+    <Text accessibilityLabel={`${(halves / 2).toFixed(1)} out of 5`} style={{ color: c.accent, fontSize: 13, letterSpacing: 1 }}>
+      {'●'.repeat(full)}
+      {half ? '◐' : ''}
+      <Text style={{ color: c.pctTrack }}>{'●'.repeat(5 - full - (half ? 1 : 0))}</Text>
     </Text>
   );
 }
@@ -71,7 +75,9 @@ export function Reviews({ schoolId, schoolName }: { schoolId: number; schoolName
         <View style={{ gap: 6 }}>
           <T variant="small" tone="muted">
             {agg.overall.n} review{agg.overall.n === 1 ? '' : 's'}.{' '}
-            {agg.overall.n < MIN_REVIEWS ? `Ratings count toward the ranking from ${MIN_REVIEWS} reviews.` : 'Averages below are raw; the ranking uses a Bayesian average.'}
+            {agg.overall.n < MIN_REVIEWS
+              ? `Ratings start counting in the ranking once a school has ${MIN_REVIEWS} reviews.`
+              : 'These are plain averages. In the ranking, schools with few reviews are pulled toward the national average so one or two ratings can’t dominate.'}
           </T>
           {CROWD_DIMENSIONS.map((d) => {
             const a = agg[d];
@@ -86,11 +92,7 @@ export function Reviews({ schoolId, schoolName }: { schoolId: number; schoolName
               </View>
             );
           })}
-          {agg.overall.n >= MIN_REVIEWS ? (
-            <T variant="micro" tone="muted">
-              {`Ranking value (overall): ${bayesianAverage(agg.overall.n, agg.overall.avg, 3.6).toFixed(2)} with prior strength 5.`}
-            </T>
-          ) : null}
+
         </View>
       ) : null}
 

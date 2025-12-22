@@ -30,6 +30,8 @@ export function T({
   ...rest
 }: TextProps & { variant?: Variant; tone?: Tone; serif?: boolean; bold?: boolean; num?: boolean }) {
   const c = useTheme();
+  // Micro text is small enough that the muted ink fails contrast; it gets secondary ink instead.
+  if (variant === 'micro' && tone === 'muted') tone = 'secondary';
   const color = {
     primary: c.ink,
     secondary: c.inkSecondary,

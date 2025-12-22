@@ -29,6 +29,12 @@ function SchoolLink({ id, name }: { id: number; name: string }) {
   );
 }
 
+/** "↑3 → #12", "↓34 → #112" or "no change", relative to the current rank. */
+function moved(now: number, then: number): string {
+  if (then === now) return 'no change';
+  return `${then < now ? '↑' : '↓'}${Math.abs(then - now)} → #${then}`;
+}
+
 function signed(x: number) {
   return `${x >= 0 ? '+' : '−'}${Math.abs(x).toFixed(1)}`;
 }
@@ -37,7 +43,7 @@ export default function SchoolScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const c = useTheme();
   const { wide } = useLayout();
-  const { result, index, idxOf, schoolById, metaByKey } = useRanking();
+  const { result, index, idxOf, schoolById, metaByKey, crowd } = useRanking();
   const schoolId = Number(id);
   const school = schoolById(schoolId);
   const i = idxOf(schoolId);
@@ -139,7 +145,10 @@ export default function SchoolScreen() {
                     style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 6, borderTopWidth: 1, borderTopColor: c.hairline }}>
                     <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                       <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: c.group[m.group] }} />
-                      <Text style={{ color: c.ink, fontSize: 14, flexShrink: 1 }}>{m.label}</Text>
+                      <Text style={{ color: c.ink, fontSize: 14, flexShrink: 1 }}>
+                        {m.label}
+                        {m.group === 'crowd' && crowd.source === 'demo' ? <Text style={{ color: c.warn }}> (synthetic)</Text> : null}
+                      </Text>
                     </View>
                     <T variant="small" tone="secondary" num style={{ width: 64, textAlign: 'right' }}>
                       {Math.round(ct.share * 100)}%
@@ -199,18 +208,18 @@ export default function SchoolScreen() {
               />
             ) : null}
             {sens.length ? (
-              <View style={{ gap: space.xs }}>
+              <View style={{ gap: space.xs, maxWidth: 560 }}>
                 <T variant="label" tone="secondary">
-                  How much each weight matters here
+                  How much each weight matters here (now #{ex.rank})
                 </T>
                 {sens.map((s) => (
-                  <View key={s.key} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <View key={s.key} style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
                     <Text style={{ flex: 1, color: c.inkSecondary, fontSize: 13 }}>{METRIC_BY_KEY[s.key].label}</Text>
-                    <T variant="small" tone="secondary" num style={{ width: 110, textAlign: 'right' }}>
-                      drop it: #{s.rankIfZero}
+                    <T variant="small" tone="secondary" num style={{ width: 140, textAlign: 'right' }}>
+                      {`drop: ${moved(ex.rank, s.rankIfZero)}`}
                     </T>
-                    <T variant="small" tone="secondary" num style={{ width: 110, textAlign: 'right' }}>
-                      double it: #{s.rankIfDoubled}
+                    <T variant="small" tone="secondary" num style={{ width: 140, textAlign: 'right' }}>
+                      {`double: ${moved(ex.rank, s.rankIfDoubled)}`}
                     </T>
                   </View>
                 ))}
@@ -240,7 +249,7 @@ export default function SchoolScreen() {
                     {g.label}
                   </T>
                 </View>
-                <View style={{ flexDirection: wide ? 'row' : 'column', flexWrap: 'wrap', gap: space.lg }}>
+                <View style={{ flexDirection: wide ? 'row' : 'column', flexWrap: 'wrap', justifyContent: 'space-between', rowGap: space.lg }}>
                   {metrics.map((m) => {
                     const k = index.metricIndex.get(m.key as MetricKey)!;
                     const raw = index.pct[k]![i]!;
@@ -257,7 +266,7 @@ export default function SchoolScreen() {
                           ? `Higher than ${Math.round(raw * 100)}%`
                           : `Better than ${Math.round(p * 100)}%`;
                     return (
-                      <View key={m.key} style={{ gap: 4, width: wide ? '47%' : '100%' }} testID={`metric-${m.key}`}>
+                      <View key={m.key} style={{ gap: 4, width: wide ? '48%' : '100%' }} testID={`metric-${m.key}`}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space.sm }}>
                           <Text style={{ color: c.inkSecondary, fontSize: 13, flexShrink: 1 }}>{m.label}</Text>
                           <T bold num>

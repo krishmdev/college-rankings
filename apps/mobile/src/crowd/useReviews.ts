@@ -26,11 +26,11 @@ type Row = {
 } & Record<`rating_${CrowdDimension}`, number>;
 
 async function fetchLive(schoolId: number): Promise<ReviewView[]> {
+  // public_reviews has no author ids and only published rows.
   const { data, error } = await supabase!
-    .from('reviews')
-    .select('*')
+    .from('public_reviews')
+    .select('id,relationship,grad_year,title,body,created_at,rating_overall,rating_academics,rating_social,rating_career,rating_housing,rating_safety,rating_value')
     .eq('school_id', schoolId)
-    .eq('status', 'published')
     .order('created_at', { ascending: false })
     .limit(50);
   if (error) throw error;
@@ -58,13 +58,7 @@ export function useReviews(schoolId: number) {
   return useQuery({
     queryKey: ['reviews', schoolId, supabase !== null],
     queryFn: async (): Promise<{ reviews: ReviewView[]; source: 'demo' | 'live' }> => {
-      if (supabase) {
-        try {
-          return { reviews: await fetchLive(schoolId), source: 'live' };
-        } catch {
-          // Backend configured but unreachable: fall through to the labeled demo data.
-        }
-      }
+      if (supabase) return { reviews: await fetchLive(schoolId), source: 'live' };
       return { reviews: DEMO_REVIEWS.filter((r) => r.schoolId === schoolId), source: 'demo' };
     },
   });

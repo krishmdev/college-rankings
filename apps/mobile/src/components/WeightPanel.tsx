@@ -86,6 +86,7 @@ function GroupSection({ group, label }: { group: MetricGroup; label: string }) {
   const metrics = METRICS.filter((m) => m.group === group);
   const active = useProfileStore((s) => metrics.filter((m) => (s.profile.weights[m.key] ?? 0) > 0).length);
   const [open, setOpen] = useState(group !== 'crowd' && group !== 'preference');
+  const synthetic = group === 'crowd' && crowd.source === 'demo';
   const coverageOf = (k: MetricKey) => {
     const v = coverage.get(k) ?? 0;
     return v > 0 ? v : null;
@@ -101,6 +102,7 @@ function GroupSection({ group, label }: { group: MetricGroup; label: string }) {
         <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: c.group[group] }} />
         <T variant="label" tone="secondary" style={{ flex: 1 }}>
           {label}
+          {synthetic ? ' · synthetic demo' : ''}
         </T>
         {active > 0 ? (
           <Text style={{ fontSize: 12, color: c.accent, fontWeight: '600' }}>{active} on</Text>
@@ -112,9 +114,13 @@ function GroupSection({ group, label }: { group: MetricGroup; label: string }) {
           {metrics.map((m) => (
             <MetricRow key={m.key} k={m.key} coverage={coverageOf(m.key)} />
           ))}
-          {group === 'crowd' && crowd.source === 'none' ? (
-            <T variant="small" tone="muted">
-              Student reviews aren’t loaded, so these weights have no effect.
+          {group === 'crowd' ? (
+            <T variant="small" tone={crowd.source === 'live' ? 'secondary' : 'warn'}>
+              {crowd.source === 'demo'
+                ? 'Synthetic demo data: these weights rank on generated ratings, not real students.'
+                : crowd.source === 'unavailable'
+                  ? 'The review server isn’t reachable, so these weights have no effect right now.'
+                  : 'Ratings from students who verified a school email.'}
             </T>
           ) : null}
         </View>

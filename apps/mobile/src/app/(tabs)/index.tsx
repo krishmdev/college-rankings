@@ -1,11 +1,12 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Modal, ScrollView, Text, View } from 'react-native';
+import { Modal, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { METRIC_BY_KEY } from '@college/ranking-engine';
 
 import { FilterPanel, MissingControl } from '@/components/FilterPanel';
+import { GroupKey } from '@/components/GroupKey';
 import { PresetBar } from '@/components/PresetBar';
 import { RankList } from '@/components/RankList';
 import { SearchBox } from '@/components/SearchBox';
@@ -74,6 +75,30 @@ function Notice({ text, onClose }: { text: string; onClose: () => void }) {
   );
 }
 
+// Keyboard users land on the weight panel first; this jumps past it to the list.
+function SkipToResults() {
+  const c = useTheme();
+  const [focused, setFocused] = useState(false);
+  return (
+    <Pressable
+      accessibilityRole="link"
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      onPress={() => (document.querySelector('[data-testid="search"]') as HTMLElement | null)?.focus()}
+      style={{
+        position: 'absolute',
+        zIndex: 10,
+        left: space.md,
+        top: focused ? space.md : -100,
+        padding: space.sm,
+        borderRadius: radius.md,
+        backgroundColor: c.accent,
+      }}>
+      <Text style={{ color: c.accentInk, fontWeight: '600' }}>Skip to results</Text>
+    </Pressable>
+  );
+}
+
 function Controls() {
   const { result } = useRanking();
   return (
@@ -114,6 +139,7 @@ export default function RankScreen() {
   if (wide) {
     return (
       <View style={{ flex: 1, flexDirection: 'row', backgroundColor: c.page }}>
+        {Platform.OS === 'web' ? <SkipToResults /> : null}
         <ScrollView
           testID="controls"
           style={{ width: 380, flexGrow: 0, borderRightWidth: 1, borderRightColor: c.hairline, backgroundColor: c.page }}
@@ -131,9 +157,10 @@ export default function RankScreen() {
                 <SearchBox value={query} onChange={setQuery} placeholder="Find a school in this ranking" />
               </View>
             </View>
+            <GroupKey />
           </View>
           <View style={{ flex: 1, marginHorizontal: space.xl, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: c.hairline }}>
-            <RankList query={query} />
+            <RankList query={query} onClearQuery={() => setQuery('')} />
           </View>
         </View>
       </View>
@@ -151,7 +178,7 @@ export default function RankScreen() {
           <Button testID="open-controls" label="Weights & filters" kind="secondary" onPress={() => setSheet(true)} />
         </View>
       </View>
-      <RankList query={query} />
+      <RankList query={query} onClearQuery={() => setQuery('')} />
       <Modal visible={sheet} animationType="slide" onRequestClose={() => setSheet(false)} presentationStyle="pageSheet">
         <View style={{ flex: 1, backgroundColor: c.page, paddingTop: insets.top }}>
           <View

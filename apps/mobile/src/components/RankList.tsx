@@ -8,7 +8,9 @@ import { useLayout } from '@/theme/useLayout';
 import { useTheme } from '@/theme/useTheme';
 
 import { ROW_HEIGHT, type RowData, SchoolRow } from './SchoolRow';
-import { EmptyState } from './ui';
+import { useProfileStore } from '@/state/profileStore';
+
+import { Button, EmptyState } from './ui';
 
 function matches(q: string, name: string, aliases?: string[]) {
   if (!q) return true;
@@ -16,11 +18,12 @@ function matches(q: string, name: string, aliases?: string[]) {
   return name.toLowerCase().includes(needle) || !!aliases?.some((a) => a.toLowerCase().includes(needle));
 }
 
-export function RankList({ query, header }: { query: string; header?: React.ReactElement }) {
+export function RankList({ query, onClearQuery, header }: { query: string; onClearQuery: () => void; header?: React.ReactElement }) {
   const c = useTheme();
   const { compact, wide, width } = useLayout();
   const showBar = width >= 1200;
   const { result, index } = useRanking();
+  const clearFilters = useProfileStore((s) => s.clearFilters);
 
   // Positions are cheap; contributions are computed lazily per rendered row.
   const order = useMemo(() => {
@@ -67,6 +70,12 @@ export function RankList({ query, header }: { query: string; header?: React.Reac
           <EmptyState
             title="No schools match"
             body={query ? `Nothing matches “${query}” with these filters.` : 'Loosen a filter to see schools again.'}
+            action={
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                {query ? <Button label="Clear search" small kind="secondary" onPress={onClearQuery} /> : null}
+                <Button label="Reset filters" small onPress={clearFilters} />
+              </View>
+            }
           />
         </View>
       }

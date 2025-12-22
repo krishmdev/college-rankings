@@ -12,7 +12,7 @@ import { useTheme } from '@/theme/useTheme';
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <Card style={{ gap: space.md }}>
+    <Card style={{ gap: space.md, maxWidth: 860, width: '100%' }}>
       <T variant="heading" serif accessibilityRole="header">
         {title}
       </T>

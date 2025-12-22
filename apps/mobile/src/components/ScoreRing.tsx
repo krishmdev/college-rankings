@@ -33,10 +33,10 @@ export function ScoreRing({ score, size = 44 }: { score: number; size?: number }
         style={{
           color: c.ink,
           fontWeight: '700',
-          fontSize: size >= 60 ? 18 : 13,
+          fontSize: size >= 60 ? 18 : 12,
           fontVariant: ['tabular-nums'],
         }}>
-        {score.toFixed(size >= 60 ? 1 : 0)}
+        {score.toFixed(1)}
       </Text>
     </View>
   );

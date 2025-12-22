@@ -104,7 +104,7 @@ const defs: Record<MetricKey, Omit<MetricDef, 'key'>> = {
     group: 'teaching',
     direction: 'higher',
     unit: 'usd',
-    description: 'Average monthly salary of full-time instructional faculty.',
+    description: 'Average salary of full-time instructional faculty (Scorecard reports it monthly; shown per year).',
   },
   research_total: {
     label: 'Total R&D spending',

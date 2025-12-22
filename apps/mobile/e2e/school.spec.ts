@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import demo from '../src/crowd/demoReviews.json';
+
 import { watchExternal } from './helpers';
 
 test('school page explains the rank and shows provenance', async ({ page }) => {
@@ -12,7 +14,7 @@ test('school page explains the rank and shows provenance', async ({ page }) => {
   await expect(page.getByTestId('metric-research_total')).toContainText('$784.4M');
   await expect(page.getByTestId('metric-research_total')).toContainText('NSF HERD FY2024');
   await page.getByTestId('show-sensitivity').click();
-  await expect(page.getByTestId('why-card')).toContainText('drop it: #');
+  await expect(page.getByTestId('why-card')).toContainText(/drop: (no change|[↑↓]\d+ → #\d+)/);
   expect(external).toEqual([]);
 });
 
@@ -34,9 +36,11 @@ test('an unknown id shows a not-found state', async ({ page }) => {
 });
 
 test('offline reviews are labeled synthetic and feed the crowd weights', async ({ page }) => {
-  await page.goto('./school/104179'); // University of Arizona has 12 synthetic reviews
+  const n = demo.reviews.filter((r: { schoolId: number }) => r.schoolId === 104179).length; // University of Arizona
+  await page.goto('./school/104179');
   const card = page.getByTestId('reviews-card');
   await expect(card).toContainText('Synthetic demo data');
-  await expect(card).toContainText('12 reviews');
+  await expect(card).toContainText(`${n} reviews`);
+  await expect(page.getByTestId('why-card')).not.toContainText('(synthetic)'); // Balanced preset weighs no crowd metric
   await expect(card).not.toContainText('Write a review');
 });

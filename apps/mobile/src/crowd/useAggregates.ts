@@ -7,7 +7,8 @@ import { CROWD_DIMENSIONS } from '@college/ranking-engine';
 import demo from './demoReviews.json';
 import { supabase } from './supabase';
 
-export type CrowdSource = 'none' | 'demo' | 'live';
+/** demo: no backend configured, synthetic reviews. live: backend data. unavailable: backend configured but unreachable. */
+export type CrowdSource = 'demo' | 'live' | 'unavailable';
 
 export interface CrowdData {
   aggregates: ReadonlyMap<number, SchoolAggregates>;
@@ -55,18 +56,23 @@ async function liveAggregates(): Promise<Map<number, SchoolAggregates>> {
 }
 
 const DEMO: CrowdData = { aggregates: demoAggregates(), source: 'demo' };
+const EMPTY: CrowdData = { aggregates: new Map(), source: 'unavailable' };
 
-/** Live aggregates when a backend is configured and reachable; otherwise the synthetic demo set. */
+/**
+ * Synthetic demo aggregates when no backend is configured. With a backend, only live data: if it
+ * can't be reached the crowd metrics are empty (and the UI says so) rather than silently fake.
+ */
 export function useCrowdAggregates(): CrowdData {
   const live = useQuery({
     queryKey: ['aggregates'],
     queryFn: liveAggregates,
     enabled: supabase !== null,
     staleTime: 5 * 60_000,
-    retry: 0,
+    retry: 1,
   });
   return useMemo<CrowdData>(() => {
+    if (!supabase) return DEMO;
     if (live.data) return { aggregates: live.data, source: 'live' };
-    return DEMO;
+    return EMPTY;
   }, [live.data]);
 }

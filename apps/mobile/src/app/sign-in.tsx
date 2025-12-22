@@ -28,7 +28,11 @@ export default function SignIn() {
     return (
       <Screen>
         <Stack.Screen options={{ title: 'Sign in' }} />
-        <EmptyState title="Reviews are offline" body="This build has no backend configured, so sign-in is off. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_KEY to enable it." />
+        <EmptyState
+          title="Reviews and sign-in are off in this offline demo"
+          body="Rankings work fully offline. Signing in with a school email and writing reviews need the review server, which this build doesn’t connect to."
+          action={<Button label="Back to rankings" kind="secondary" onPress={() => router.replace('/')} />}
+        />
       </Screen>
     );
   }
@@ -47,7 +51,12 @@ export default function SignIn() {
     setBusy(true);
     setError(null);
     // Check the domain first so we never send a code that can't work.
-    const { data: ok } = await supabase!.rpc('is_school_email', { email: email.trim() });
+    const { data: ok, error: rpcError } = await supabase!.rpc('is_school_email', { email: email.trim() });
+    if (rpcError) {
+      setBusy(false);
+      setError('Couldn’t reach the review server. Check your connection and try again.');
+      return;
+    }
     if (!ok) {
       setBusy(false);
       setError('That domain isn’t on the list of supported schools. Use your school email.');

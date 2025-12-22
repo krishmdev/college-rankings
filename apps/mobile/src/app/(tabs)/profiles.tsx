@@ -93,7 +93,7 @@ export default function ProfilesScreen() {
           Profiles
         </T>
         <View style={{ flexDirection: wide ? 'row' : 'column', gap: space.lg, alignItems: 'flex-start' }}>
-          <View style={{ flex: 1, gap: space.lg, width: '100%' }}>
+          <View style={{ flex: wide ? 1 : undefined, gap: space.lg, width: '100%' }}>
             <Card style={{ gap: space.md }}>
               <T variant="heading" serif>
                 Your current weights
@@ -103,7 +103,7 @@ export default function ProfilesScreen() {
               <T variant="label" tone="secondary">
                 Share link
               </T>
-              <Text selectable testID="share-url" style={{ fontSize: 12, color: c.inkSecondary, fontFamily: 'monospace' }} numberOfLines={3}>
+              <Text selectable testID="share-url" style={{ fontSize: 12, color: c.inkSecondary, fontFamily: 'monospace' }} numberOfLines={1} ellipsizeMode="middle">
                 {url}
               </Text>
               <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}>
@@ -187,7 +187,7 @@ export default function ProfilesScreen() {
             </Card>
           </View>
 
-          <View style={{ flex: 1, gap: space.md, width: '100%' }}>
+          <View style={{ flex: wide ? 1 : undefined, gap: space.md, width: '100%' }}>
             <Card style={{ gap: space.sm }}>
               <T variant="heading" serif>
                 Account

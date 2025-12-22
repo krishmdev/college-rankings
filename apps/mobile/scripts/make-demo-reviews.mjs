@@ -30,6 +30,13 @@ const bySize = [...snap.schools].sort((a, b) => b.ugSize - a.ugSize);
 const chosen = new Set(bySize.slice(0, 40).map((s) => s.id));
 while (chosen.size < 100) chosen.add(pick(snap.schools).id);
 
+// Two different sentences per review.
+function twoLines() {
+  const a = Math.floor(rnd() * LINES.length);
+  const b = (a + 1 + Math.floor(rnd() * (LINES.length - 1))) % LINES.length;
+  return `${LINES[a]} ${LINES[b]}`;
+}
+
 const reviews = [];
 let id = 1;
 for (const s of snap.schools.filter((x) => chosen.has(x.id))) {
@@ -44,8 +51,8 @@ for (const s of snap.schools.filter((x) => chosen.has(x.id))) {
       relationship: rnd() < 0.7 ? 'current_student' : 'recent_alum',
       gradYear: 2024 + Math.floor(rnd() * 5),
       ratings: { overall: r(0), academics: r(0.2), social: r(0), career: r(-0.1), housing: r(-0.4), safety: r(0.2), value: r(-0.2) },
-      title: pick(TITLES),
-      body: [pick(LINES), pick(LINES)].join(' '),
+      title: TITLES[(s.id + k) % TITLES.length],
+      body: twoLines(),
     });
   }
 }
