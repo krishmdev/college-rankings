@@ -15,16 +15,31 @@ are used anywhere in this repo, so there are no live-key runs.
 | Engine timing (compute lease) | `pnpm engine:bench` | rank p50 1.12 ms for 2,500 × 28; see `docs/results/engine-bench.json` and its manifest |
 | Web export | `pnpm export:web` | builds under `/college-rankings`, with `404.html` and `.nojekyll` |
 | Native bundle | `npx expo export -p android` | Hermes bundle builds; not run on a device or emulator |
-| Browser e2e | `pnpm e2e` | 28 passed, 2 skipped (offline-only checks), desktop 1440×900 and Pixel 7 |
-| Offline e2e | `make e2e-offline` | 30 passed; preview server, Playwright and Chromium all under `offline-run`; server-side canary got EPERM for 1.1.1.1, api.openai.com, huggingface.co, collegescorecard.ed.gov |
+| Browser e2e | `pnpm e2e` | 28 passed, 2 skipped (offline-only checks), desktop 1440×900 and Pixel 7 (rerun 2025-12-24 after the final-review fixes) |
+| Offline e2e | `OFFLINE_RUN=… make e2e-offline` | 30 passed (rerun 2025-12-24); preview server, Playwright and Chromium all under `offline-run`; server-side canary got EPERM for 1.1.1.1, api.openai.com, huggingface.co, collegescorecard.ed.gov |
 | Canary control | `make canary` | unsandboxed canary connects to all four targets; sandboxed one is blocked |
 
 ## Supabase
 
-The local Supabase CLI 2.117.0 run on 2025-12-23 (23:40 EDT) applied both migrations and the
-seed, then passed **47 pgTAP checks and 9 Auth API integration checks**. The latter exercised
-the signup hook, OTP confirmation, school-scoped review access, blocked role/affiliation edits,
-and email changes within and between schools. The test runner stopped its containers afterward.
+`pnpm supabase:test` under the compute lease (2025-12-25 01:31 UTC, Supabase CLI 2.117.0, HEAD
+`736dd7a`, no uncommitted sources): all three migrations and the seed applied, **58 pgTAP checks
+and 11 Auth API integration checks passed**, and the stack was stopped afterward.
+
+The run covers:
+- the signup hook and OTP confirmation;
+- school-scoped review access and blocked edits to roles, affiliations and status;
+- email changes to gmail rejected, with the email left unchanged;
+- a school-to-school move that needs both confirmations;
+- flags from reporters surviving author edits;
+- withdraw instead of delete;
+- plus-addressed aliases refused;
+- a sticky admin revoke;
+- author ids hidden from anon;
+- three distinct reporters flagging a review.
+
 See [`docs/results/supabase-tests.txt`](results/supabase-tests.txt) and its
-[`manifest`](results/supabase-tests.manifest.json) for the command, exit status, and source hashes.
-This verifies the local stack, not a hosted Supabase deployment.
+[manifest](results/supabase-tests.manifest.json), whose per-file sha256 values are the binding
+record of what was tested. This verifies the local stack, not a hosted Supabase project.
+
+An earlier run on 2025-12-24 failed 2 of 58 pgTAP checks. It was a test bug: after the privacy
+change, report lookups have to go through `public_reviews`. The fix is `736dd7a`.

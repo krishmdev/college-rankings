@@ -1,14 +1,10 @@
-# supabase tests 2025-12-24T03:40:10Z
+# supabase tests 2025-12-25T01:31:14Z
 ## pgTAP
-npm warn Unknown env config "npm-globalconfig". This will stop working in the next major version of npm.
-npm warn Unknown env config "verify-deps-before-run". This will stop working in the next major version of npm.
-npm warn Unknown env config "_jsr-registry". This will stop working in the next major version of npm.
-npm warn Unknown env config "node-linker". This will stop working in the next major version of npm.
 Connecting to local database...
 psql:supabase/tests/affiliations_test.sql:3: NOTICE:  extension "pgtap" already exists, skipping
 supabase/tests/affiliations_test.sql .. ok
 All tests successful.
-Files=1, Tests=47,  0 wallclock secs ( 0.01 usr  0.02 sys +  0.00 cusr  0.01 csys =  0.04 CPU)
+Files=1, Tests=58,  1 wallclock secs ( 0.02 usr  0.01 sys +  0.00 cusr  0.01 csys =  0.04 CPU)
 Result: PASS
 ## auth integration
 TAP version 13
@@ -16,69 +12,81 @@ TAP version 13
     # Subtest: precheck RPC answers for anon
     ok 1 - precheck RPC answers for anon
       ---
-      duration_ms: 125.52125
+      duration_ms: 55.291666
       type: 'test'
       ...
     # Subtest: signup with a non-school email is refused by the hook
     ok 2 - signup with a non-school email is refused by the hook
       ---
-      duration_ms: 363.409792
+      duration_ms: 149.588834
       type: 'test'
       ...
     # Subtest: school signup is pending until the OTP is confirmed, then active
     ok 3 - school signup is pending until the OTP is confirmed, then active
       ---
-      duration_ms: 520.180917
+      duration_ms: 270.513166
+      type: 'test'
+      ...
+    # Subtest: a plus-addressed alias of an existing account cannot sign up
+    ok 4 - a plus-addressed alias of an existing account cannot sign up
+      ---
+      duration_ms: 127.676416
+      type: 'test'
+      ...
+    # Subtest: anon reads reviews without author ids
+    ok 5 - anon reads reviews without author ids
+      ---
+      duration_ms: 7.28675
       type: 'test'
       ...
     # Subtest: an unconfirmed password account cannot get a session at all
-    ok 4 - an unconfirmed password account cannot get a session at all
+    ok 6 - an unconfirmed password account cannot get a session at all
       ---
-      duration_ms: 218.989041
+      duration_ms: 188.70475
       type: 'test'
       ...
     # Subtest: verified student can review their school, and only their school
-    ok 5 - verified student can review their school, and only their school
+    ok 7 - verified student can review their school, and only their school
       ---
-      duration_ms: 98.912625
+      duration_ms: 72.858083
       type: 'test'
       ...
     # Subtest: direct tampering with affiliations, roles or review status is denied
-    ok 6 - direct tampering with affiliations, roles or review status is denied
+    ok 8 - direct tampering with affiliations, roles or review status is denied
       ---
-      duration_ms: 74.202084
+      duration_ms: 48.973417
       type: 'test'
       ...
     # Subtest: changing the account email to gmail is rejected and leaves the email unchanged
-    ok 7 - changing the account email to gmail is rejected and leaves the email unchanged
+    ok 9 - changing the account email to gmail is rejected and leaves the email unchanged
       ---
-      duration_ms: 236.675875
+      duration_ms: 143.361916
       type: 'test'
       ...
     # Subtest: admin API cannot set a non-school email either
-    ok 8 - admin API cannot set a non-school email either
+    ok 10 - admin API cannot set a non-school email either
       ---
-      duration_ms: 80.301
+      duration_ms: 54.303375
       type: 'test'
       ...
     # Subtest: moving to another school needs both confirmations, then revokes the old affiliation
-    ok 9 - moving to another school needs both confirmations, then revokes the old affiliation
+    ok 11 - moving to another school needs both confirmations, then revokes the old affiliation
       ---
-      duration_ms: 1750.764541
+      duration_ms: 1440.308667
       type: 'test'
       ...
-    1..9
+    1..11
 ok 1 - school-email accounts
   ---
-  duration_ms: 3559.954458
+  duration_ms: 2593.7015
   type: 'suite'
   ...
 1..1
-# tests 9
+# tests 11
 # suites 1
-# pass 9
+# pass 11
 # fail 0
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 4197.340875
+# duration_ms 2704.124542
