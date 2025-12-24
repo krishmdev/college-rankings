@@ -12,6 +12,7 @@ import {
   METRIC_KEYS,
   PRESETS,
   ProfileDecodeError,
+  ProfileEncodeError,
 } from '../src';
 
 const arbProfile: fc.Arbitrary<Profile> = fc.record({
@@ -34,13 +35,22 @@ const arbProfile: fc.Arbitrary<Profile> = fc.record({
     { requiredKeys: [] },
   ),
 });
+const arbAdmissionBounds = fc.tuple(fc.integer({ min: 0, max: 100 }), fc.integer({ min: 0, max: 100 }));
 
 describe('profile codec', () => {
   it('round-trips arbitrary profiles', () => {
     fc.assert(
-      fc.property(arbProfile, (p) => {
-        const decoded = decodeProfile(encodeProfile(p));
-        expect(decoded).toEqual(p);
+      fc.property(arbProfile, arbAdmissionBounds, (p, [a, b]) => {
+        const profile: Profile = {
+          ...p,
+          filters: {
+            ...p.filters,
+            admitRateMin: Math.min(a, b) / 100,
+            admitRateMax: Math.max(a, b) / 100,
+          },
+        };
+        const decoded = decodeProfile(encodeProfile(profile));
+        expect(decoded).toEqual(profile);
       }),
     );
   });
@@ -65,6 +75,20 @@ describe('profile codec', () => {
     expect(() => decodeProfile('v1.' + base64UrlEncode('{"w":{"hacked":3}}'))).toThrow(ProfileDecodeError);
     expect(() => decodeProfile('v1.' + base64UrlEncode('{"w":{"grad_rate":11}}'))).toThrow(ProfileDecodeError);
     expect(() => decodeProfile('v1.' + base64UrlEncode('{"w":{},"x":1}'))).toThrow(ProfileDecodeError);
+  });
+
+  it('rejects an admission-rate filter whose minimum exceeds its maximum', () => {
+    const payload = JSON.stringify({ w: {}, f: { a0: 0.8, a1: 0.2 } });
+    expect(() => decodeProfile(`v1.${base64UrlEncode(payload)}`)).toThrow(ProfileDecodeError);
+    expect(() =>
+      encodeProfile({
+        weights: {},
+        directions: {},
+        missing: 'penalize',
+        normalizeWithin: 'all',
+        filters: { admitRateMin: 0.8, admitRateMax: 0.2 },
+      }),
+    ).toThrow(ProfileEncodeError);
   });
 
   it('base64url matches the platform encoder', () => {

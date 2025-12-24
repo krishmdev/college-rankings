@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Switch, Text, TextInput, View } from 'react-native';
 
 import type { Control, Filters, Locale, MetricKey, Region, SizeBand } from '@college/ranking-engine';
 import { isEmptyFilters, MISSING_STRATEGIES } from '@college/ranking-engine';
 
 import { useProfileStore } from '@/state/profileStore';
+import { useRanking } from '@/data/RankingProvider';
 import { radius, space } from '@/theme/tokens';
 import { useTheme } from '@/theme/useTheme';
 
@@ -77,6 +78,8 @@ export function MissingControl() {
 
 export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
   const c = useTheme();
+  const { snapshot } = useRanking();
+  const validStateCodes = useMemo(() => new Set(snapshot.schools.map((school) => school.state)), [snapshot]);
   const f = useProfileStore((s) => s.profile.filters);
   const normalizeWithin = useProfileStore((s) => s.profile.normalizeWithin);
   const setFilters = useProfileStore((s) => s.setFilters);
@@ -86,6 +89,12 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
   const set = (patch: Partial<Filters>) => setFilters(patch);
   const requireAll = !!f.requireData?.length;
   const admitIdx = ADMIT.findIndex((a) => (a.min ?? null) === (f.admitRateMin ?? null) && (a.max ?? null) === (f.admitRateMax ?? null));
+  const unknownStateCodes = [...new Set(
+    statesText
+      .toUpperCase()
+      .split(/[^A-Z]+/)
+      .filter((code) => code.length >= 2 && !validStateCodes.has(code)),
+  )];
 
   return (
     <View style={{ gap: space.lg }}>
@@ -123,6 +132,7 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
           States
         </T>
         <TextInput
+          testID="state-filter-input"
           accessibilityLabel="States, comma separated"
           placeholder="e.g. MA, NY, CA"
           placeholderTextColor={c.inkMuted}
@@ -133,7 +143,7 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
             const codes = t
               .toUpperCase()
               .split(/[^A-Z]+/)
-              .filter((x) => x.length === 2);
+              .filter((code) => validStateCodes.has(code));
             set({ states: [...new Set(codes)] });
           }}
           style={{
@@ -147,6 +157,11 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
             fontSize: 14,
           }}
         />
+        {unknownStateCodes.length > 0 ? (
+          <T testID="state-filter-error" variant="small" tone="critical">
+            Unknown state codes: {unknownStateCodes.join(', ')}
+          </T>
+        ) : null}
       </View>
       <Section title="Undergraduate size">
         {SIZES.map((s) => (

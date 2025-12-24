@@ -42,6 +42,19 @@ test('a net price cap shrinks the list', async ({ page }) => {
   expect(await count()).toBeGreaterThan(100);
 });
 
+test('unknown state codes are ignored and shown as a filter error', async ({ page }) => {
+  await openRank(page);
+  await openControls(page);
+  const stateInput = page.getByTestId('state-filter-input');
+  await stateInput.fill('ZZ');
+  await expect(page.getByTestId('state-filter-error')).toHaveText('Unknown state codes: ZZ');
+  await expect(page.getByTestId('rank-summary')).toHaveText('1,532 schools');
+
+  await stateInput.fill('MA, ZZ');
+  await expect(page.getByTestId('state-filter-error')).toHaveText('Unknown state codes: ZZ');
+  await expect(page.getByTestId('rank-summary')).not.toHaveText('1,532 schools');
+});
+
 test('search narrows the list but keeps real ranks', async ({ page }) => {
   await openRank(page);
   await page.getByTestId('search').first().fill('Boston University');

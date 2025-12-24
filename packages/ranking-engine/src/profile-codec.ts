@@ -31,6 +31,15 @@ const compactSchema = z
         rq: z.array(metricKey).optional(),
       })
       .strict()
+      .superRefine((filters, ctx) => {
+        if (filters.a0 !== undefined && filters.a1 !== undefined && filters.a0 > filters.a1) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['a1'],
+            message: 'maximum admission rate must be at least the minimum',
+          });
+        }
+      })
       .optional(),
   })
   .strict();
@@ -107,9 +116,12 @@ export function fromCompact(c: Compact): Profile {
 }
 
 export function encodeProfile(p: Profile): string {
-  return PREFIX + base64UrlEncode(JSON.stringify(toCompact(p)));
+  const parsed = compactSchema.safeParse(toCompact(p));
+  if (!parsed.success) throw new ProfileEncodeError('profile has invalid fields');
+  return PREFIX + base64UrlEncode(JSON.stringify(parsed.data));
 }
 
+export class ProfileEncodeError extends Error {}
 export class ProfileDecodeError extends Error {}
 
 export function decodeProfile(token: string): Profile {
