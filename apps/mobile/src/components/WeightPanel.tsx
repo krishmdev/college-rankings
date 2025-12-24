@@ -115,12 +115,14 @@ function GroupSection({ group, label }: { group: MetricGroup; label: string }) {
             <MetricRow key={m.key} k={m.key} coverage={coverageOf(m.key)} />
           ))}
           {group === 'crowd' ? (
-            <T variant="small" tone={crowd.source === 'live' ? 'secondary' : 'warn'}>
+            <T variant="small" tone={crowd.source === 'live' || crowd.source === 'loading' ? 'secondary' : 'warn'}>
               {crowd.source === 'demo'
                 ? 'Synthetic demo data: these weights rank on generated ratings, not real students.'
                 : crowd.source === 'unavailable'
                   ? 'The review server isn’t reachable, so these weights have no effect right now.'
-                  : 'Ratings from students who verified a school email.'}
+                  : crowd.source === 'loading'
+                    ? 'Loading student ratings…'
+                    : 'Ratings from students who verified a school email.'}
             </T>
           ) : null}
         </View>

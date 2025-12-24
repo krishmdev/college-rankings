@@ -7,8 +7,11 @@ import { CROWD_DIMENSIONS } from '@college/ranking-engine';
 import demo from './demoReviews.json';
 import { supabase } from './supabase';
 
-/** demo: no backend configured, synthetic reviews. live: backend data. unavailable: backend configured but unreachable. */
-export type CrowdSource = 'demo' | 'live' | 'unavailable';
+/**
+ * demo: no backend configured, synthetic reviews. live: backend data. loading: first fetch in flight.
+ * unavailable: backend configured but the fetch failed.
+ */
+export type CrowdSource = 'demo' | 'live' | 'loading' | 'unavailable';
 
 export interface CrowdData {
   aggregates: ReadonlyMap<number, SchoolAggregates>;
@@ -56,6 +59,7 @@ async function liveAggregates(): Promise<Map<number, SchoolAggregates>> {
 }
 
 const DEMO: CrowdData = { aggregates: demoAggregates(), source: 'demo' };
+const LOADING: CrowdData = { aggregates: new Map(), source: 'loading' };
 const EMPTY: CrowdData = { aggregates: new Map(), source: 'unavailable' };
 
 /**
@@ -73,6 +77,6 @@ export function useCrowdAggregates(): CrowdData {
   return useMemo<CrowdData>(() => {
     if (!supabase) return DEMO;
     if (live.data) return { aggregates: live.data, source: 'live' };
-    return EMPTY;
-  }, [live.data]);
+    return live.isPending ? LOADING : EMPTY;
+  }, [live.data, live.isPending]);
 }

@@ -8,7 +8,7 @@ import { useTheme } from '@/theme/useTheme';
 /** Color key for the groups the current profile weighs. */
 export function GroupKey() {
   const c = useTheme();
-  const { result } = useRanking();
+  const { result, crowd } = useRanking();
   const groups = new Set(result.active.map((a) => METRIC_BY_KEY[a.key].group));
   if (!groups.size) return null;
   return (
@@ -16,7 +16,10 @@ export function GroupKey() {
       {GROUPS.filter((g) => groups.has(g.key)).map((g) => (
         <View key={g.key} style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
           <View style={{ width: 10, height: 10, borderRadius: 2, backgroundColor: c.group[g.key] }} />
-          <Text style={{ fontSize: 12, color: c.inkSecondary }}>{g.label}</Text>
+          <Text style={{ fontSize: 12, color: c.inkSecondary }}>
+            {g.label}
+            {g.key === 'crowd' && crowd.source === 'demo' ? <Text style={{ color: c.warn }}> (synthetic demo)</Text> : null}
+          </Text>
         </View>
       ))}
     </View>

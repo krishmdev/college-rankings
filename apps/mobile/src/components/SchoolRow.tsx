@@ -3,7 +3,9 @@ import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import type { Contribution } from '@college/ranking-engine';
+import { METRIC_BY_KEY } from '@college/ranking-engine';
 
+import { useRanking } from '@/data/RankingProvider';
 import { controlLabel } from '@/lib/format';
 import { space } from '@/theme/tokens';
 import { useTheme } from '@/theme/useTheme';
@@ -31,6 +33,8 @@ export const ROW_HEIGHT = 92;
 export const SchoolRow = memo(function SchoolRow({ row, compact }: { row: RowData; compact: boolean }) {
   const c = useTheme();
   const router = useRouter();
+  const { crowd } = useRanking();
+  const syntheticCrowd = crowd.source === 'demo' && !!row.all?.some((x) => METRIC_BY_KEY[x.key].group === 'crowd');
   return (
     <Pressable
         onPress={() => router.push({ pathname: '/school/[id]', params: { id: String(row.id) } })}
@@ -78,7 +82,7 @@ export const SchoolRow = memo(function SchoolRow({ row, compact }: { row: RowDat
             <ContributionBar
               items={row.all}
               height={12}
-              caption={`${row.all.length} metrics · ${Math.round(row.coverage * 100)}% measured · hover for detail`}
+              caption={`${row.all.length} metrics · ${Math.round(row.coverage * 100)}% measured${syntheticCrowd ? ' · reviews are synthetic demo data' : ' · hover for detail'}`}
             />
           </View>
         ) : null}

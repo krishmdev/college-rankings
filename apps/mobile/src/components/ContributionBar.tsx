@@ -4,12 +4,14 @@ import { Pressable, Text, View } from 'react-native';
 import type { Contribution } from '@college/ranking-engine';
 import { METRIC_BY_KEY } from '@college/ranking-engine';
 
+import { useRanking } from '@/data/RankingProvider';
 import { useTheme } from '@/theme/useTheme';
 
-export function describeContribution(it: Contribution): string {
+export function describeContribution(it: Contribution, syntheticCrowd = false): string {
   const m = METRIC_BY_KEY[it.key];
   const standing = it.imputed ? 'no data, estimated' : `top ${Math.max(1, Math.round((1 - it.s) * 100))}%`;
-  return `${m.short}: +${it.points.toFixed(1)} pts, ${standing}`;
+  const tag = syntheticCrowd && m.group === 'crowd' ? ' (synthetic demo)' : '';
+  return `${m.short}${tag}: +${it.points.toFixed(1)} pts, ${standing}`;
 }
 
 /**
@@ -28,13 +30,15 @@ export function ContributionBar({
   caption?: string;
 }) {
   const c = useTheme();
+  const { crowd } = useRanking();
+  const synthetic = crowd.source === 'demo';
   const [active, setActive] = useState<Contribution | null>(null);
   const total = items.reduce((a, x) => a + x.points, 0);
   return (
     <View style={{ gap: 4 }}>
       <View
         accessible
-        accessibilityLabel={`Score ${total.toFixed(1)} of 100: ${items.map(describeContribution).join('; ')}`}
+        accessibilityLabel={`Score ${total.toFixed(1)} of 100: ${items.map((x) => describeContribution(x, synthetic)).join('; ')}`}
         style={{ flexDirection: 'row', height, borderRadius: 4, backgroundColor: c.pctTrack, overflow: 'hidden' }}>
         {items.map((it, i) => (
           <Pressable
@@ -55,7 +59,7 @@ export function ContributionBar({
       </View>
       {caption !== undefined || active ? (
         <Text numberOfLines={1} style={{ fontSize: 11, color: c.inkSecondary, fontVariant: ['tabular-nums'] }}>
-          {active ? describeContribution(active) : caption}
+          {active ? describeContribution(active, synthetic) : caption}
         </Text>
       ) : null}
     </View>

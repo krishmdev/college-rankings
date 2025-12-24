@@ -208,3 +208,37 @@ describe('school-email accounts', () => {
     if (userId) await admin.auth.admin.deleteUser(userId).catch(() => {});
   });
 });
+
+describe('concurrent reports', () => {
+  const ids = [];
+
+  async function signedIn(email) {
+    const password = `pw-${run}-long-enough`;
+    const { data, error } = await admin.auth.admin.createUser({ email, password, email_confirm: true });
+    assert.ifError(error);
+    ids.push(data.user.id);
+    const c = client();
+    const s = await c.auth.signInWithPassword({ email, password });
+    assert.ifError(s.error);
+    return c;
+  }
+
+  test('three reporters at once all succeed and flag the review (no deadlock)', async () => {
+    const author = await signedIn(`author.${run}@bu.edu`);
+    const posted = await author.from('reviews').insert(review(164988)).select('id,status').single();
+    assert.ifError(posted.error);
+    assert.equal(posted.data.status, 'published');
+    const reporters = await Promise.all([1, 2, 3].map((n) => signedIn(`reporter${n}.${run}@umich.edu`)));
+    // Separate sessions, separate PostgREST connections, fired together.
+    const results = await Promise.all(
+      reporters.map((c) => c.from('review_reports').insert({ review_id: posted.data.id, reason: 'spam' })),
+    );
+    for (const r of results) assert.ifError(r.error);
+    const { data } = await admin.from('reviews').select('status,moderation_source').eq('id', posted.data.id).single();
+    assert.deepEqual(data, { status: 'flagged', moderation_source: 'reports' });
+  });
+
+  after(async () => {
+    for (const id of ids) await admin.auth.admin.deleteUser(id).catch(() => {});
+  });
+});

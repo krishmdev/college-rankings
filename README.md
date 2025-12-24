@@ -222,7 +222,8 @@ Reviews are meant to be Glassdoor-style: only people who prove they're at a scho
     Anonymous rate limiting of that RPC is left to Supabase's gateway defaults.
   - One account per mailbox. The address is lowercased and anything after a `+` is dropped, and
     that normalized form is unique across accounts, so `alice+2@bu.edu` can't open a second
-    account next to `alice@bu.edu`.
+    account next to `alice@bu.edu`. Subdomain addresses are not merged: `alice@cs.bu.edu` and
+    `alice@bu.edu` count as separate mailboxes, even when they deliver to the same inbox.
 - **Affiliations are server-owned.** `school_affiliations` is written only by `security definer`
   triggers. It starts as `pending` and becomes `active` when the email is confirmed. A confirmed move
   to another school's email revokes the old affiliation, activates the new one, and sends the user's
@@ -237,11 +238,15 @@ Reviews are meant to be Glassdoor-style: only people who prove they're at a scho
   - Column grants keep `status` out of reach.
   - Every insert and edit is re-moderated by a trigger: emails, phone numbers, links and a short
     banned-term list send a review to the moderator queue. The limit is 5 reviews per day.
-  - An edit can clear an automatic flag, but not a flag from reporters or a moderator's decision.
+  - An edit can clear an automatic flag, but not a flag from reporters, a moderator's decision, or
+    a hold after an affiliation change. No edit changes those, including one that trips and then
+    clears the automatic filter; pgTAP covers that two-step case.
   - Authors withdraw a review instead of deleting it. Deleting would drop its reports and let the
-    author post a fresh copy.
-  - Three reports from three different accounts (one per mailbox) flag a review. Reports are
-    counted under a row lock, so concurrent reports can't slip past the threshold.
+    author post a fresh copy. Withdrawing (`withdraw_review`) and reporting (`review_reports`) are
+    API-level only: the app has no buttons for them yet.
+  - Three reports from three different accounts (one per mailbox) flag a review. Reports on one
+    review are serialized with a row lock. The integration test fires three reporters' requests at
+    once, on separate sessions, and checks that all succeed and the review ends up flagged.
   - Anonymous readers see reviews through a `public_reviews` view with no author ids.
 - Aggregates come from a view over published reviews. The app merges them into the engine as the
   seven "Student reviews" metrics.
@@ -312,7 +317,8 @@ free plan the repo must be public. The Pages build has no backend, so it shows t
   Mailpit.
 - **School email is not student status.** Faculty, staff and alumni with a school address, including
   `alum.`/`alumni.` subdomains, can review too. One account per mailbox doesn't stop someone who
-  has two real mailboxes.
+  has two real mailboxes, and subdomain forms of an address (`alice@cs.bu.edu` vs `alice@bu.edu`)
+  count as separate mailboxes.
 
 ## Layout
 

@@ -1,7 +1,7 @@
 -- Affiliation lifecycle, email policy, and RLS. Run with `supabase test db`.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(58);
+select plan(61);
 
 create function pg_temp.as_user(uid uuid) returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated')::text, true);
@@ -146,6 +146,14 @@ select lives_ok(
 select pg_temp.as_admin();
 select is((select status from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'), 'flagged',
   'a review flagged by reports stays flagged after an author edit');
+select pg_temp.as_user('22222222-2222-2222-2222-222222222222');
+select lives_ok($$update public.reviews set body = body || ' More at www.example.com' where author_id = auth.uid()$$,
+  'author adds a link');
+select lives_ok($$update public.reviews set body = replace(body, ' More at www.example.com', '') where author_id = auth.uid()$$,
+  'author removes the link again');
+select pg_temp.as_admin();
+select is((select status || '/' || moderation_source from public.reviews where author_id = '22222222-2222-2222-2222-222222222222'),
+  'flagged/reports', 'a two-step edit (auto flag, then clean) does not clear a reporters'' flag');
 select pg_temp.as_user('22222222-2222-2222-2222-222222222222');
 select throws_ok(
   format('insert into public.review_reports (review_id, reason) values (%s, %L)',
