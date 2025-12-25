@@ -27,7 +27,7 @@ interface ProfileState {
   applyPreset: (id: string) => void;
   applyProfile: (p: Profile, presetId?: string | null) => void;
   resetWeights: () => void;
-  saveCurrent: (name: string) => SavedProfile;
+  saveCurrent: (name: string) => SavedProfile | null;
   removeSaved: (id: string) => void;
   /** Message shown after opening a shared link. Not persisted. */
   notice: string | null;
@@ -67,12 +67,20 @@ export const useProfileStore = create<ProfileState>()(
       applyProfile: (p, presetId = null) => set({ profile: clone(p), presetId }),
       resetWeights: () => set((s) => ({ presetId: null, profile: { ...s.profile, weights: {} } })),
       saveCurrent: (name) => {
+        // encodeProfile validates and throws on out-of-range filters; nothing is saved then.
         const entry: SavedProfile = {
           id: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`,
           name: name.trim() || 'My profile',
-          token: encodeProfile(get().profile),
+          token: (() => {
+            try {
+              return encodeProfile(get().profile);
+            } catch {
+              return '';
+            }
+          })(),
           savedAt: new Date().toISOString(),
         };
+        if (!entry.token) return null;
         set((s) => ({ saved: [entry, ...s.saved].slice(0, 30) }));
         return entry;
       },

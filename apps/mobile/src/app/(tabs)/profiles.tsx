@@ -104,11 +104,11 @@ export default function ProfilesScreen() {
                 Share link
               </T>
               <Text selectable testID="share-url" style={{ fontSize: 12, color: c.inkSecondary, fontFamily: 'monospace' }} numberOfLines={1} ellipsizeMode="middle">
-                {url}
+                {url ?? 'This profile can’t be shared: one of its filters is out of range.'}
               </Text>
               <View style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}>
-                <Button testID="copy-link" label={copied === 'current' ? 'Copied' : 'Copy link'} small onPress={() => copy(url, 'current')} />
-                <Button label="Share…" kind="secondary" small onPress={() => Share.share({ message: url }).catch(() => {})} />
+                <Button testID="copy-link" label={copied === 'current' ? 'Copied' : 'Copy link'} small disabled={!url} onPress={() => url && copy(url, 'current')} />
+                <Button label="Share…" kind="secondary" small disabled={!url} onPress={() => url && Share.share({ message: url }).catch(() => {})} />
               </View>
               <Divider />
               <T variant="label" tone="secondary">
@@ -152,7 +152,7 @@ export default function ProfilesScreen() {
                           router.navigate('/');
                         }}
                       />
-                      <Button label={copied === p.id ? 'Copied' : 'Copy link'} kind="secondary" small onPress={() => copy(url.replace(/\?p=.*$/, `?p=${p.token}`), p.id)} />
+                      <Button label={copied === p.id ? 'Copied' : 'Copy link'} kind="secondary" small onPress={() => copy((url ?? shareUrl({ weights: {}, directions: {}, missing: 'penalize', normalizeWithin: 'all', filters: {} })!).replace(/\?p=.*$/, `?p=${p.token}`), p.id)} />
                       <Button label="Delete" kind="ghost" small onPress={() => removeSaved(p.id)} />
                     </View>
                   </View>

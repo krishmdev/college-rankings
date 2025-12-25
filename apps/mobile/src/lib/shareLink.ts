@@ -5,8 +5,14 @@ import { Platform } from 'react-native';
 import type { Profile } from '@college/ranking-engine';
 import { encodeProfile } from '@college/ranking-engine';
 
-export function shareUrl(profile: Profile): string {
-  const token = encodeProfile(profile);
+/** Null if the profile can't be encoded (encodeProfile validates before encoding). */
+export function shareUrl(profile: Profile): string | null {
+  let token: string;
+  try {
+    token = encodeProfile(profile);
+  } catch {
+    return null;
+  }
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
     const base = (Constants.expoConfig?.experiments?.baseUrl ?? '').replace(/\/$/, '');
     return `${window.location.origin}${base}/?p=${token}`;
