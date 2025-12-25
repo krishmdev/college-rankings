@@ -1,7 +1,7 @@
 # Verification log
 
-What was run on this machine (Apple M1 Pro, 16 GB, macOS), and what it showed. No provider API keys
-are used anywhere in this repo, so there are no live-key runs.
+This log records checks run on an Apple M1 Pro with 16 GB of memory, running macOS. The repo does
+not use provider API keys, so no checks involved live keys.
 
 ## 2025-12-23
 
@@ -21,9 +21,12 @@ are used anywhere in this repo, so there are no live-key runs.
 
 ## Supabase
 
-`pnpm supabase:test` under the compute lease (2025-12-25 01:31 UTC, Supabase CLI 2.117.0, HEAD
-`736dd7a`, no uncommitted sources): all three migrations and the seed applied, **58 pgTAP checks
-and 11 Auth API integration checks passed**, and the stack was stopped afterward.
+The captured `pnpm supabase:test` log (2025-12-25 05:08 UTC, Supabase CLI 2.117.0,
+HEAD `a9cd134`, no uncommitted source files recorded) reports **61 pgTAP checks and 12 Auth API
+integration checks passed**. The test script resets the local database before running the checks,
+but the captured log does not include the reset output. The log hash and all 13 source hashes in the
+manifest match the current files. This is a verified historical capture; the database was not
+rerun during this verification pass.
 
 The run covers:
 - the signup hook and OTP confirmation;
@@ -38,8 +41,24 @@ The run covers:
 - three distinct reporters flagging a review.
 
 See [`docs/results/supabase-tests.txt`](results/supabase-tests.txt) and its
-[manifest](results/supabase-tests.manifest.json), whose per-file sha256 values are the binding
-record of what was tested. This verifies the local stack, not a hosted Supabase project.
+[manifest](results/supabase-tests.manifest.json). The manifest's per-file sha256 values identify
+the exact files tested. This verifies the local stack, not a hosted Supabase project.
 
-An earlier run on 2025-12-24 failed 2 of 58 pgTAP checks. It was a test bug: after the privacy
-change, report lookups have to go through `public_reviews`. The fix is `736dd7a`.
+An earlier run on 2025-12-24 failed 2 of 58 pgTAP checks because the test looked up reports
+through the wrong table. After the privacy change, those lookups must use `public_reviews`. Commit
+`736dd7a` fixes the test.
+
+## 2025-12-25 local verification
+
+After the profile-filter validation commits and the wording pass:
+
+| Check | Command | Result |
+|---|---|---|
+| Engine + dataset | `pnpm test` | 56 passed |
+| ETL | `cd etl && uv run pytest -q` | 27 passed |
+| TypeScript and ESLint | `pnpm typecheck`, `pnpm lint` | clean |
+| Python lint and formatting | `uv run ruff check .`, `uv run ruff format --check .` | clean; 28 files formatted |
+| Static export and offline browser | `OFFLINE_RUN="$PWD/scripts/offline-run" make e2e-offline` | 34 Playwright checks passed on desktop and phone viewports, including server egress denial |
+| Generated outputs | `pnpm engine:report`; `coverage_markdown` from the committed snapshot | `docs/results/report.md` regenerates byte-for-byte; `coverage.md` matches except for the order of the HERD counts, which follows the build's insertion order |
+
+This pass did not rerun Supabase (no SQL changed) or test a hosted backend or native app.
