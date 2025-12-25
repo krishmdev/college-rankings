@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 # Starts a trimmed local Supabase stack, resets it (migrations + seed), runs pgTAP and the Auth
-# integration test, and stops the stack. The full stack is memory-heavy, so this runs under the
-# shared compute lease when the portfolio tools are present.
+# integration test, and stops the stack. The full stack is memory-heavy; RUN_WRAPPER (optional,
+# empty by default) is a command prefix that makes the run exclusive on the machine.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-# PORTFOLIO_TOOLS: optional directory holding compute_lease.py and run_manifest.py.
-tools="${PORTFOLIO_TOOLS:-}"
 out="docs/results/supabase-tests.txt"
 
 body() {
@@ -34,8 +32,4 @@ body() {
 }
 export -f body; export out
 
-if [ -n "$tools" ] && [ -f "$tools/compute_lease.py" ]; then
-  python3 "$tools/compute_lease.py" run college-supabase -- bash -c body
-else
-  bash -c body
-fi
+${RUN_WRAPPER:-} bash -c body

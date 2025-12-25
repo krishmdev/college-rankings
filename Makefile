@@ -1,7 +1,8 @@
 # Two-phase contract: `make setup` needs the network; everything after it runs offline.
-# OFFLINE_RUN: a wrapper that runs a command with outbound network denied (e.g. a sandbox-exec
-# profile on macOS). Set it in the environment; the offline targets refuse to run without it.
-OFFLINE_RUN ?=
+# OFFLINE_WRAPPER: a command prefix that denies outbound network to the whole process tree, e.g.
+# the bundled macOS sandbox-exec profile: OFFLINE_WRAPPER="$PWD/scripts/offline-run". Empty by
+# default; the offline targets refuse to run without it.
+OFFLINE_WRAPPER ?=
 
 .PHONY: setup models test lint typecheck web export e2e e2e-offline demo canary etl bench report
 
@@ -31,19 +32,19 @@ export:
 
 # Offline demo: static export served under /college-rankings on localhost, network denied.
 demo: export
-	$(OFFLINE_RUN) pnpm preview:web
+	$(OFFLINE_WRAPPER) pnpm preview:web
 
 e2e: export
 	pnpm e2e
 
 e2e-offline: export
-	@test -n "$(OFFLINE_RUN)" || (echo "set OFFLINE_RUN to a network-denying wrapper" && exit 1)
-	cd apps/mobile && $(OFFLINE_RUN) env CI=1 EXPECT_OFFLINE=1 EGRESS_CANARY=1 npx playwright test
+	@test -n "$(OFFLINE_WRAPPER)" || (echo "set OFFLINE_WRAPPER to a network-denying wrapper" && exit 1)
+	cd apps/mobile && $(OFFLINE_WRAPPER) env CI=1 EXPECT_OFFLINE=1 EGRESS_CANARY=1 npx playwright test
 
 canary:
-	@test -n "$(OFFLINE_RUN)" || (echo "set OFFLINE_RUN to a network-denying wrapper" && exit 1)
+	@test -n "$(OFFLINE_WRAPPER)" || (echo "set OFFLINE_WRAPPER to a network-denying wrapper" && exit 1)
 	node apps/mobile/scripts/egress-canary.mjs open
-	$(OFFLINE_RUN) node apps/mobile/scripts/egress-canary.mjs blocked
+	$(OFFLINE_WRAPPER) node apps/mobile/scripts/egress-canary.mjs blocked
 
 # Rebuilds the snapshot from the public sources (network, about 32 MB of downloads the first time).
 etl:
