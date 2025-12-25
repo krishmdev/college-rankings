@@ -1,0 +1,7 @@
+#!/bin/sh
+# Keep this command and its child processes on localhost for the static web demo.
+set -eu
+here="$(cd "$(dirname "$0")" && pwd)"
+exec env -u EXPO_PUBLIC_SUPABASE_URL -u EXPO_PUBLIC_SUPABASE_KEY \
+  -u SUPABASE_URL -u SUPABASE_ANON_KEY -u SUPABASE_SERVICE_KEY \
+  sandbox-exec -f "$here/offline.sb" "$@"
