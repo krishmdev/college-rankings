@@ -1,14 +1,14 @@
 {
-  "recorded_at_utc": "2025-12-25T01:31:18Z",
+  "recorded_at_utc": "2025-12-25T05:08:33Z",
   "command": "pnpm supabase:test",
   "supabase_cli": "2.117.0",
-  "git_head_at_run": "736dd7a991bd3e145e3f1fdb505387598c0a8e10",
+  "git_head_at_run": "a9cd1346e684b33ead6f8bea68543155d8089065",
   "dirty_files": [],
   "pgtap_result": "PASS",
-  "pgtap_tests": 58,
-  "auth_integration_passed": 11,
+  "pgtap_tests": 61,
+  "auth_integration_passed": 12,
   "auth_integration_failed": 0,
-  "log_sha256": "d274e4c415c8a2570965e0f9ef75d4216d0887335c4001b523cf71a7f0afc4f2",
+  "log_sha256": "4d8b67aa56077d1571dce4547e4f1d9acaf5d9939dd69163dc1794aa90a4b412",
   "source_files_sha256": {
     "package.json": "97b8583090dd0ff2d3aad629e1e4e24359593f64f8fbb816c9771b4390408834",
     "pnpm-lock.yaml": "30dd657d8665c1aa1187b0a71d9a2c9a439f1d69a0fbac4b247030aaed4d987f",
@@ -18,8 +18,9 @@
     "supabase/migrations/20251223120000_schools_and_affiliations.sql": "ef36964698b2d7cd53c85dd89dcb7c3bdcd47a2019a1dd2670257aa379f79fb6",
     "supabase/migrations/20251223120100_reviews.sql": "975dc2328e71ed7718b686f698a45a901cb0557df5440e4f42c86e56b4a5bad2",
     "supabase/migrations/20251224090000_review_integrity.sql": "c1a535a1de3330ecd62050a0f0f360fb6d53c365cfb678315092ae678fd82727",
-    "supabase/tests/affiliations_test.sql": "7cd74f5be4717010894b7307f1bca545de2cd00c0e42c8c024090e9a6e0ec297",
-    "supabase/integration/auth-flow.test.mjs": "680905699ab5b69e4e5bcb44d25de0f383260b7446cec780ce3404a5f4a8f16d",
+    "supabase/migrations/20251225090000_moderation_fixes.sql": "66659c04b89bb57bee2863e082d63a768e3144cc4627e07d1e438063ec7fd438",
+    "supabase/tests/affiliations_test.sql": "a9c60d5d0fdcf8a7ef1b68661ab721cf09b712425c18f9de1e69449b88d9a0c0",
+    "supabase/integration/auth-flow.test.mjs": "0309c1dffb014d4e9ecc1cd7c9fcdcf19595431dd27668ae504e12f3d25c9573",
     "supabase/templates/email_change.html": "a7eb170d44faf367185b9bdf3139aca029b09b1d60dfe026729590fda4d66839",
     "supabase/templates/otp.html": "ee474d5897122f26561a35cfbc0c3b74502b8f9ba29087abf36ec95247795433"
   }
