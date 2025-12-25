@@ -1,11 +1,11 @@
 # College Rankings
 
-Rank four-year colleges by what you care about instead of what a magazine does. Pick how much
-graduation rates, cost, class size, research, clubs or student reviews matter to you, and the app
-re-ranks 1,532 U.S. colleges on the spot and shows its work for every school.
+Rank four-year colleges using your own priorities. Set weights for graduation rates, cost,
+class size, research, clubs and student reviews. The app ranks 1,532 U.S. colleges as you adjust
+them and shows how it scored each school.
 
-It's one Expo codebase (iOS, Android, web). The ranking runs on the device against a versioned
-snapshot of public data, so the whole thing works offline. An optional Supabase backend adds
+One Expo codebase runs on iOS, Android and the web. Ranking happens on the device using a versioned
+snapshot of public data, so the app works offline. An optional Supabase backend adds
 reviews from students who verify a school email.
 
 ![Rank screen at desktop width](docs/screenshots/rank-desktop.png)
@@ -14,8 +14,9 @@ reviews from students who verify a school email.
 |---|---|
 | ![School page](docs/screenshots/school-desktop.png) | ![Phone layout](docs/screenshots/rank-mobile.png) |
 
-Web demo: `https://krishmdev.github.io/college-rankings/`. It goes live once the repo is public and
-Pages is switched on; see [Deploy](#deploy).
+Planned Pages URL: `https://krishmdev.github.io/college-rankings/`. This is not a verified live
+deployment. Run the public, no-key web demo locally with the commands below; see [Deploy](#deploy)
+for the optional publishing path.
 
 ## Quickstart (offline)
 
@@ -25,12 +26,14 @@ Requires Node 22, pnpm 10, and (for the ETL only) uv with Python 3.13.
 make setup          # pnpm install, Playwright's Chromium, uv sync (network)
 make demo           # static web build served at http://127.0.0.1:4173/college-rankings/
 make test           # engine + dataset contract (vitest), ETL (pytest)
-make e2e-offline    # Playwright against the static export, whole stack with network denied
+OFFLINE_RUN="$PWD/scripts/offline-run" make e2e-offline  # macOS: Playwright with outbound network denied
 ```
 
 `make e2e-offline` and `make canary` need `OFFLINE_RUN` set to a wrapper that denies outbound
-network for a whole process tree; on macOS a `sandbox-exec` profile that allows only localhost
-works. `make demo` uses it too when set. The bench and Supabase scripts take the shared compute
+network for a whole process tree. The included macOS `scripts/offline-run` uses `sandbox-exec`
+to allow only localhost and Unix sockets, and clears Supabase environment configuration. Set
+`OFFLINE_RUN` to its absolute path because the Playwright target changes directory. `make demo`
+uses the wrapper too when set. The bench and Supabase scripts take the shared compute
 lease when `PORTFOLIO_TOOLS` points at a directory with `compute_lease.py` and `run_manifest.py`,
 and just run directly otherwise.
 
@@ -77,7 +80,7 @@ universe, which the fixed, versioned snapshot keeps reproducible.
 
 ### Missing data
 
-Schools don't all report everything, so the app gives you three strategies:
+Schools report different sets of metrics. You can handle gaps in three ways:
 
 - **Penalize** (default): a missing metric counts as the 25th percentile. That assumes "below
   average", not "worst": a school that would land in the bottom quarter on that metric can come out
@@ -94,8 +97,8 @@ be the neutral strategy in disguise: `c·raw = Σ_known w·s / Σw` and `(1 − 
 Shrinking the fill value instead is what makes the third option different. A unit test checks that
 it doesn't equal neutral.
 
-It matters when coverage is thin. Club counts cover 19.4% of schools. With the Campus life preset,
-penalize and neutral agree on 50 of the top 50, and "use what is known" shares 43 of them.
+The choice matters when coverage is thin. Club counts cover 19.4% of schools. With the Campus life
+preset, penalize and neutral agree on 50 of the top 50, and "use what is known" shares 43 of them.
 
 ### Explanations
 
@@ -128,7 +131,7 @@ These are the weights U.S. News has used since its 2024 edition, which it says t
 usnews.com timed out or refused automated requests while this was built, so they come from secondary
 summaries. **Check them against the U.S. News methodology page before quoting them.**
 
-Small changes move schools a lot. Here is the preset's top 10, and each school's rank after one
+Small weight changes can move schools far. Here is the preset's top 10, and each school's rank after one
 change (from [`docs/results/report.md`](docs/results/report.md)):
 
 | School | Rank | no grad rate | no SAT | no research | add net price (w=5) |
@@ -162,7 +165,7 @@ metric carries its source and any caveat into the app as a provenance badge.
 Per-metric coverage is in [`data/snapshots/2025-12-23/coverage.md`](data/snapshots/2025-12-23/coverage.md),
 and file hashes and retrieval dates are in the manifest next to it.
 
-Things the ETL handles that a naive join gets wrong:
+The ETL accounts for several source-data quirks:
 
 - **HERD rows without a unitid.** 32 standard-form rows have no IPEDS id, including Johns Hopkins
   (the largest R&D spender), Ohio State and Maryland. A plain join gives them $0.
@@ -207,7 +210,7 @@ public Engage directory.
 
 ## Student reviews (optional backend)
 
-Reviews are meant to be Glassdoor-style: only people who prove they're at a school can review it.
+Student reviews require an account verified through a school email address.
 
 - **Accounts are school-email-only, for their whole life.**
   - A `before_user_created` auth hook refuses any signup whose domain isn't mapped to a school.
@@ -257,9 +260,8 @@ data" wherever they appear: on the review card, in the Student reviews sliders, 
 the "why #N" table. With a backend configured, the app never falls back to them; if the server is
 unreachable, the crowd metrics are empty and the sliders say so.
 
-What school-email verification can't tell apart: faculty, staff and alumni with a school address
-(including `alum.`/`alumni.` subdomains, which match their school's domain) look the same as
-students.
+School-email verification can't distinguish students from faculty, staff or alumni with a school
+address, including `alum.`/`alumni.` subdomains, which match their school's domain.
 
 To run it locally:
 
