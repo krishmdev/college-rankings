@@ -147,7 +147,7 @@ const md: string[] = [
   `|---|---|${scenarios.map(() => '---').join('|')}|`,
   ...sensitivityTable.map((r) => `| ${r.name} | ${r.rank} | ${scenarios.map((s) => r.scenarios[s.label]).join(' | ')} |`),
   '',
-  `Largest single move in the top 50: ${biggest.name}, #${biggest.from} to #${biggest.to} with ${biggest.label}.`,
+  `The largest rank change in the top 50 was ${biggest.name}, from #${biggest.from} to #${biggest.to} with ${biggest.label}.`,
   '',
   '## Missing-data strategies (Campus life preset, top 50)',
   '',
