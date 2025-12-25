@@ -122,7 +122,8 @@ def coverage_markdown(doc: dict[str, Any], herd_stats: dict[str, int]) -> str:
     lines = [
         f"# Coverage for snapshot {doc['snapshotId']}",
         "",
-        f"Universe: {doc['universe']['count']} schools ({doc['universe']['rule']}).",
+        f"The snapshot includes {doc['universe']['count']} schools under these filters: "
+        f"{doc['universe']['rule']}.",
         "",
         "| Metric | Source | Coverage |",
         "|---|---|---|",
@@ -131,7 +132,7 @@ def coverage_markdown(doc: dict[str, Any], herd_stats: dict[str, int]) -> str:
         lines.append(f"| `{m['key']}` | {m['source']} | {m['coverage'] * 100:.1f}% |")
     lines += [
         "",
-        "HERD join: " + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in herd_stats.items()) + ".",
+        "HERD merge counts: " + ", ".join(f"{k.replace('_', ' ')} {v}" for k, v in herd_stats.items()) + ".",
         "",
     ]
     return "\n".join(lines)

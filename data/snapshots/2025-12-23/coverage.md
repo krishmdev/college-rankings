@@ -1,6 +1,6 @@
 # Coverage for snapshot 2025-12-23
 
-Universe: 1532 schools (CURROPER=1, PREDDEG=3, CONTROL in [1, 2], ICLEVEL=1, DISTANCEONLY!=1, UGDS>=300).
+The snapshot includes 1532 schools under these filters: CURROPER=1, PREDDEG=3, CONTROL in [1, 2], ICLEVEL=1, DISTANCEONLY!=1, UGDS>=300.
 
 | Metric | Source | Coverage |
 |---|---|---|
@@ -26,4 +26,4 @@ Universe: 1532 schools (CURROPER=1, PREDDEG=3, CONTROL in [1, 2], ICLEVEL=1, DIS
 | `undergrad_size` | scorecard | 100.0% |
 | `endowment_per_student` | derived | 96.0% |
 
-HERD join: rows 925, matched rows 809, excluded rows 46, schools with R&D 808, system level 12, imputed zero 683, reported with parent 41.
+HERD merge counts: rows 925, matched rows 809, excluded rows 46, schools with R&D 808, system level 12, imputed zero 683, reported with parent 41.
