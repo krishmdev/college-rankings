@@ -86,11 +86,18 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
   const clearFilters = useProfileStore((s) => s.clearFilters);
   const setNormalizeWithin = useProfileStore((s) => s.setNormalizeWithin);
   const [statesText, setStatesText] = useState((f.states ?? []).join(', '));
+  const textStateCodes = useMemo(
+    () => [...new Set(statesText.toUpperCase().split(/[^A-Z]+/).filter((code) => validStateCodes.has(code)))],
+    [statesText, validStateCodes],
+  );
+  const storedStateCodes = f.states ?? [];
+  const statesTextIsCurrent = storedStateCodes.length === textStateCodes.length && storedStateCodes.every((code, i) => code === textStateCodes[i]);
+  const displayedStatesText = statesTextIsCurrent ? statesText : storedStateCodes.join(', ');
   const set = (patch: Partial<Filters>) => setFilters(patch);
   const requireAll = !!f.requireData?.length;
   const admitIdx = ADMIT.findIndex((a) => (a.min ?? null) === (f.admitRateMin ?? null) && (a.max ?? null) === (f.admitRateMax ?? null));
   const unknownStateCodes = [...new Set(
-    statesText
+    displayedStatesText
       .toUpperCase()
       .split(/[^A-Z]+/)
       .filter((code) => code.length >= 2 && !validStateCodes.has(code)),
@@ -137,7 +144,7 @@ export function FilterPanel({ weightedKeys }: { weightedKeys: MetricKey[] }) {
           placeholder="e.g. MA, NY, CA"
           placeholderTextColor={c.inkMuted}
           autoCapitalize="characters"
-          value={statesText}
+          value={displayedStatesText}
           onChangeText={(t) => {
             setStatesText(t);
             const codes = t

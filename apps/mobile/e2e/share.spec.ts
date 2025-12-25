@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { firstRowName, openRank } from './helpers';
+import { closeControls, firstRowName, openControls, openRank } from './helpers';
 
 test('a share link reproduces the ranking in a fresh browser', async ({ page, browser }) => {
   await openRank(page);
@@ -31,4 +31,26 @@ test('saved profiles survive a reload', async ({ page }) => {
   await page.getByTestId('save-profile').click();
   await page.reload();
   await expect(page.getByTestId('saved-My test profile')).toBeVisible();
+});
+
+test('using a saved shared profile refreshes the state filter input', async ({ page }) => {
+  await openRank(page);
+  await openControls(page);
+  await page.getByTestId('state-filter-input').fill('MA');
+  await closeControls(page);
+
+  await page.getByRole('tab', { name: 'Profiles' }).click();
+  await page.getByTestId('profile-name').fill('Massachusetts');
+  await page.getByTestId('save-profile').click();
+
+  await page.getByRole('tab', { name: 'Rank' }).click();
+  await openControls(page);
+  await page.getByTestId('state-filter-input').fill('NY');
+  await closeControls(page);
+
+  await page.getByRole('tab', { name: 'Profiles' }).click();
+  await page.getByTestId('saved-Massachusetts').getByRole('button', { name: 'Use' }).click();
+  await page.getByRole('tab', { name: 'Rank' }).click();
+  await openControls(page);
+  await expect(page.getByTestId('state-filter-input')).toHaveValue('MA');
 });
