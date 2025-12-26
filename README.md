@@ -34,7 +34,8 @@ network for a whole process tree. The bundled `scripts/offline-run` is a macOS s
 that denies outbound network except localhost (and Unix sockets), and it clears Supabase
 environment variables. Use its absolute path, because the Playwright target changes directory.
 `make demo` uses the wrapper too when it's set. The bench and Supabase scripts accept an optional
-`RUN_WRAPPER` command prefix for running exclusively on the machine; both are empty by default.
+`RUN_WRAPPER` command prefix, used so that no other heavy jobs run at the same time; both are empty
+by default.
 
 `pnpm web` starts the Expo dev server instead. `pnpm start` gives a QR code for Expo Go on a
 phone; SDK 57's Expo Go needs the same Expo account signed in on the CLI and in the app.
@@ -108,7 +109,7 @@ weight. Student reviews use a Bayesian average, `(n·mean + 5·μ) / (n + 5)`. A
 
 ### Speed
 
-`pnpm engine:bench` ran exclusively on the machine and writes
+`pnpm engine:bench` ran with no other heavy jobs running and writes
 [`docs/results/engine-bench.json`](docs/results/engine-bench.json) with a host manifest. Timings are
 in Node with a warm index. Ranking 2,500 synthetic schools with all 28 metrics weighted takes 1.12 ms
 at the median (the target was under 5 ms). The real 1,532-school snapshot with the Balanced preset

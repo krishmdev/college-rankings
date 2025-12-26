@@ -1,5 +1,5 @@
 """Writes a small host record next to a timing result: chip, RAM, OS, power source, and whether
-the run was wrapped to run exclusively on the machine (RUN_WRAPPER set)."""
+the run was wrapped so no other heavy jobs ran alongside it (RUN_WRAPPER set)."""
 
 import json
 import os

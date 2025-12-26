@@ -1,5 +1,5 @@
 // End-to-end checks against the local Supabase stack (Auth API + PostgREST + Mailpit).
-// Run through scripts/supabase-test.sh, which starts the stack under the compute lease and passes
+// Run through scripts/supabase-test.sh, which starts the local stack and passes
 // SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY and MAILPIT_URL.
 import assert from 'node:assert/strict';
 import { after, before, describe, test } from 'node:test';

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Starts a trimmed local Supabase stack, resets it (migrations + seed), runs pgTAP and the Auth
 # integration test, and stops the stack. The full stack is memory-heavy; RUN_WRAPPER (optional,
-# empty by default) is a command prefix that makes the run exclusive on the machine.
+# empty by default) is a command prefix that holds off other heavy jobs while it runs.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 out="docs/results/supabase-tests.txt"

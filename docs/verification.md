@@ -12,7 +12,7 @@ not use provider API keys, so no checks involved live keys.
 | Lint / types | `pnpm lint`, `pnpm typecheck`, `ruff check`, `ruff format --check` | clean |
 | Snapshot build from live sources | `uv run college-etl build --snapshot-id 2025-12-23` | 1,532 schools; all validation gates and spot checks passed (BU faculty 1,994, BU R&D $784.4M, JHU $4.13B, OSU $1.58B, UMich 1,983 clubs) |
 | Engage crawl | `uv run college-etl engage-discover` | 1,496 subdomains probed at ≤2 req/s; 305 found, 5 errors (non-JSON responses), kept as unknown |
-| Engine timing (run exclusively on the machine) | `pnpm engine:bench` | rank p50 1.12 ms for 2,500 × 28; see `docs/results/engine-bench.json` and its manifest |
+| Engine timing (no other heavy jobs running) | `pnpm engine:bench` | rank p50 1.12 ms for 2,500 × 28; see `docs/results/engine-bench.json` and its manifest |
 | Web export | `pnpm export:web` | builds under `/college-rankings`, with `404.html` and `.nojekyll` |
 | Native bundle | `npx expo export -p android` | Hermes bundle builds; not run on a device or emulator |
 | Browser e2e | `pnpm e2e` | 28 passed, 2 skipped (offline-only checks), desktop 1440×900 and Pixel 7 (rerun 2025-12-24 after the final-review fixes) |
@@ -21,7 +21,7 @@ not use provider API keys, so no checks involved live keys.
 
 ## Supabase
 
-`pnpm supabase:test`, run exclusively on the machine on 2025-12-25 (Supabase CLI 2.117.0, HEAD
+`pnpm supabase:test`, run with no other heavy jobs running on 2025-12-25 (Supabase CLI 2.117.0, HEAD
 `97d66bd`, no uncommitted source files), reset the local database, applied every migration and
 the seed, and passed **61 pgTAP checks and 12 Auth API integration checks**. The stack was stopped
 afterward, and the manifest's per-file sha256 values match the committed files. Earlier captures of
