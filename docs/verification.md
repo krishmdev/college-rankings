@@ -22,7 +22,7 @@ not use provider API keys, so no checks involved live keys.
 ## Supabase
 
 `pnpm supabase:test`, run with no other heavy jobs running on 2025-12-25 (Supabase CLI 2.117.0, HEAD
-`97d66bd`, no uncommitted source files), reset the local database, applied every migration and
+`70e1a22`, no uncommitted source files), reset the local database, applied every migration and
 the seed, and passed **61 pgTAP checks and 12 Auth API integration checks**. The stack was stopped
 afterward, and the manifest's per-file sha256 values match the committed files. Earlier captures of
 the same suite recorded commits that were later rewritten out of history; this run supersedes

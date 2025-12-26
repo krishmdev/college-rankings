@@ -1,19 +1,19 @@
 {
-  "recorded_at_utc": "2025-12-25T14:46:07Z",
+  "recorded_at_utc": "2025-12-25T15:23:44Z",
   "command": "pnpm supabase:test",
   "exclusive_run": true,
   "supabase_cli": "2.117.0",
-  "git_head_at_run": "97d66bd939333854ecf1d75fa5e68275f40cc43e",
+  "git_head_at_run": "70e1a22db65adbd716a41f9fb29b6caddf8c06a9",
   "dirty_files": [],
   "pgtap_result": "PASS",
   "pgtap_tests": 61,
   "auth_integration_passed": 12,
   "auth_integration_failed": 0,
-  "log_sha256": "eaff546a5aed2c1b7c2eee82293b6779deac2861af8a490141a4e5e3ee494135",
+  "log_sha256": "186b1eca99dbc52806496a2d9916e3a22e342cd1283fd6852e4323f7a7913d0f",
   "source_files_sha256": {
     "package.json": "97b8583090dd0ff2d3aad629e1e4e24359593f64f8fbb816c9771b4390408834",
     "pnpm-lock.yaml": "30dd657d8665c1aa1187b0a71d9a2c9a439f1d69a0fbac4b247030aaed4d987f",
-    "scripts/supabase-test.sh": "24ec4d9d1d05fbe0dfc206a803d5c094c75f1d1af71a6e74f72301e984d5a061",
+    "scripts/supabase-test.sh": "e4a8fb80407f952f7c8957884a8a23e80f04888bf2fe25143d0af0b4b3fb9e8e",
     "supabase/config.toml": "e0151789023db548ed7765c40981f776573ea49acd2630a20a44b84eaf8b6044",
     "supabase/seed.sql": "9c7568a1b8b021a424776ee1ce9b5ac151a582daf5683b9e4240c5a57227c450",
     "supabase/migrations/20251223120000_schools_and_affiliations.sql": "ef36964698b2d7cd53c85dd89dcb7c3bdcd47a2019a1dd2670257aa379f79fb6",
@@ -21,7 +21,7 @@
     "supabase/migrations/20251224090000_review_integrity.sql": "c1a535a1de3330ecd62050a0f0f360fb6d53c365cfb678315092ae678fd82727",
     "supabase/migrations/20251225090000_moderation_fixes.sql": "66659c04b89bb57bee2863e082d63a768e3144cc4627e07d1e438063ec7fd438",
     "supabase/tests/affiliations_test.sql": "a9c60d5d0fdcf8a7ef1b68661ab721cf09b712425c18f9de1e69449b88d9a0c0",
-    "supabase/integration/auth-flow.test.mjs": "0309c1dffb014d4e9ecc1cd7c9fcdcf19595431dd27668ae504e12f3d25c9573",
+    "supabase/integration/auth-flow.test.mjs": "656567f879b18a7b776f02f4c453976bfc78d926b850c001bf76d08300badb78",
     "supabase/templates/email_change.html": "a7eb170d44faf367185b9bdf3139aca029b09b1d60dfe026729590fda4d66839",
     "supabase/templates/otp.html": "ee474d5897122f26561a35cfbc0c3b74502b8f9ba29087abf36ec95247795433"
   }

@@ -1,10 +1,10 @@
-# supabase tests 2025-12-25T14:45:24Z
+# supabase tests 2025-12-25T15:23:38Z
 ## pgTAP
 Connecting to local database...
 psql:supabase/tests/affiliations_test.sql:3: NOTICE:  extension "pgtap" already exists, skipping
 supabase/tests/affiliations_test.sql .. ok
 All tests successful.
-Files=1, Tests=61,  1 wallclock secs ( 0.07 usr  0.05 sys +  0.10 cusr  0.08 csys =  0.30 CPU)
+Files=1, Tests=61,  0 wallclock secs ( 0.01 usr  0.01 sys +  0.00 cusr  0.01 csys =  0.03 CPU)
 Result: PASS
 A new version of Supabase CLI is available: v2.118.0 (currently installed v2.117.0)
 We recommend updating regularly for new features and bug fixes: https://supabase.com/docs/guides/cli/getting-started#updating-the-supabase-cli
@@ -14,86 +14,86 @@ TAP version 13
     # Subtest: precheck RPC answers for anon
     ok 1 - precheck RPC answers for anon
       ---
-      duration_ms: 290.10875
+      duration_ms: 69.242208
       type: 'test'
       ...
     # Subtest: signup with a non-school email is refused by the hook
     ok 2 - signup with a non-school email is refused by the hook
       ---
-      duration_ms: 560.99175
+      duration_ms: 160.358291
       type: 'test'
       ...
     # Subtest: school signup is pending until the OTP is confirmed, then active
     ok 3 - school signup is pending until the OTP is confirmed, then active
       ---
-      duration_ms: 771.47675
+      duration_ms: 286.385458
       type: 'test'
       ...
     # Subtest: a plus-addressed alias of an existing account cannot sign up
     ok 4 - a plus-addressed alias of an existing account cannot sign up
       ---
-      duration_ms: 277.548459
+      duration_ms: 153.801583
       type: 'test'
       ...
     # Subtest: anon reads reviews without author ids
     ok 5 - anon reads reviews without author ids
       ---
-      duration_ms: 23.352375
+      duration_ms: 7.484875
       type: 'test'
       ...
     # Subtest: an unconfirmed password account cannot get a session at all
     ok 6 - an unconfirmed password account cannot get a session at all
       ---
-      duration_ms: 367.039667
+      duration_ms: 204.971209
       type: 'test'
       ...
     # Subtest: verified student can review their school, and only their school
     ok 7 - verified student can review their school, and only their school
       ---
-      duration_ms: 394.303334
+      duration_ms: 79.173584
       type: 'test'
       ...
     # Subtest: direct tampering with affiliations, roles or review status is denied
     ok 8 - direct tampering with affiliations, roles or review status is denied
       ---
-      duration_ms: 168.383625
+      duration_ms: 57.41375
       type: 'test'
       ...
     # Subtest: changing the account email to gmail is rejected and leaves the email unchanged
     ok 9 - changing the account email to gmail is rejected and leaves the email unchanged
       ---
-      duration_ms: 405.256416
+      duration_ms: 180.469458
       type: 'test'
       ...
     # Subtest: admin API cannot set a non-school email either
     ok 10 - admin API cannot set a non-school email either
       ---
-      duration_ms: 213.506666
+      duration_ms: 66.712083
       type: 'test'
       ...
     # Subtest: moving to another school needs both confirmations, then revokes the old affiliation
     ok 11 - moving to another school needs both confirmations, then revokes the old affiliation
       ---
-      duration_ms: 2184.258042
+      duration_ms: 1449.594375
       type: 'test'
       ...
     1..11
 ok 1 - school-email accounts
   ---
-  duration_ms: 5731.279542
+  duration_ms: 2759.201791
   type: 'suite'
   ...
 # Subtest: concurrent reports
     # Subtest: three reporters at once all succeed and flag the review (no deadlock)
     ok 1 - three reporters at once all succeed and flag the review (no deadlock)
       ---
-      duration_ms: 1821.724208
+      duration_ms: 511.364833
       type: 'test'
       ...
     1..1
 ok 2 - concurrent reports
   ---
-  duration_ms: 2216.988583
+  duration_ms: 644.811708
   type: 'suite'
   ...
 1..2
@@ -104,4 +104,4 @@ ok 2 - concurrent reports
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 8241.329542
+# duration_ms 3533.132125
