@@ -1,5 +1,5 @@
 // Timing check for the 5 ms target: 2,500 schools x every registry metric weighted.
-// Run through `pnpm engine:bench` (wrapped in the compute lease); writes BENCH_OUT if set.
+// Run through `pnpm engine:bench`; writes BENCH_OUT if set.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 

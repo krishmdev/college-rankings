@@ -26,16 +26,15 @@ Requires Node 22, pnpm 10, and (for the ETL only) uv with Python 3.13.
 make setup          # pnpm install, Playwright's Chromium, uv sync (network)
 make demo           # static web build served at http://127.0.0.1:4173/college-rankings/
 make test           # engine + dataset contract (vitest), ETL (pytest)
-OFFLINE_RUN="$PWD/scripts/offline-run" make e2e-offline  # macOS: Playwright with outbound network denied
+OFFLINE_WRAPPER="$PWD/scripts/offline-run" make e2e-offline  # macOS: Playwright with outbound network denied
 ```
 
-`make e2e-offline` and `make canary` need `OFFLINE_RUN` set to a wrapper that denies outbound
-network for a whole process tree. The included macOS `scripts/offline-run` uses `sandbox-exec`
-to allow only localhost and Unix sockets, and clears Supabase environment configuration. Set
-`OFFLINE_RUN` to its absolute path because the Playwright target changes directory. `make demo`
-uses the wrapper too when set. The bench and Supabase scripts take the shared compute
-lease when `PORTFOLIO_TOOLS` points at a directory with `compute_lease.py` and `run_manifest.py`,
-and just run directly otherwise.
+`make e2e-offline` and `make canary` need `OFFLINE_WRAPPER` set to a command that denies outbound
+network for a whole process tree. The bundled `scripts/offline-run` is a macOS sandbox-exec profile
+that denies outbound network except localhost (and Unix sockets), and it clears Supabase
+environment variables. Use its absolute path, because the Playwright target changes directory.
+`make demo` uses the wrapper too when it's set. The bench and Supabase scripts accept an optional
+`RUN_WRAPPER` command prefix for running exclusively on the machine; both are empty by default.
 
 `pnpm web` starts the Expo dev server instead. `pnpm start` gives a QR code for Expo Go on a
 phone; SDK 57's Expo Go needs the same Expo account signed in on the CLI and in the app.
@@ -109,7 +108,7 @@ weight. Student reviews use a Bayesian average, `(n·mean + 5·μ) / (n + 5)`. A
 
 ### Speed
 
-`pnpm engine:bench` (run with `PORTFOLIO_TOOLS` set, so it takes the shared compute lease) and writes
+`pnpm engine:bench` ran exclusively on the machine and writes
 [`docs/results/engine-bench.json`](docs/results/engine-bench.json) with a host manifest. Timings are
 in Node with a warm index. Ranking 2,500 synthetic schools with all 28 metrics weighted takes 1.12 ms
 at the median (the target was under 5 ms). The real 1,532-school snapshot with the Balanced preset
@@ -266,7 +265,7 @@ address, including `alum.`/`alumni.` subdomains, which match their school's doma
 To run it locally:
 
 ```bash
-pnpm supabase:test   # starts a trimmed local stack under the compute lease, db reset, pgTAP, auth integration test, stop
+pnpm supabase:test   # starts a trimmed local stack, db reset, pgTAP, auth integration test, stop
 npx supabase start -x realtime,storage-api,imgproxy,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
 EXPO_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321 EXPO_PUBLIC_SUPABASE_KEY=<anon key from `npx supabase status`> pnpm web
 open http://127.0.0.1:54324   # Mailpit: sign-in codes land here
@@ -284,7 +283,7 @@ open http://127.0.0.1:54324   # Mailpit: sign-in codes land here
   committed-snapshot hash, seed generation.
 - `make e2e-offline`: Playwright on desktop and phone viewports against the static export under the
   `/college-rankings` subpath.
-  - The whole process tree runs under `$OFFLINE_RUN`, which denies outbound network.
+  - The whole process tree runs under `$OFFLINE_WRAPPER`, which denies outbound network.
   - An egress canary inside the preview server must fail to reach 1.1.1.1 and friends.
   - `make canary` shows the same canary connecting when unsandboxed.
   - In CI the same suite runs in a `--network none` container.
