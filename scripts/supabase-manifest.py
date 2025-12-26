@@ -6,6 +6,7 @@ was checked out, and dirty_files lists any tracked source that differed from it 
 
 import hashlib
 import json
+import os
 import re
 import subprocess
 import sys
@@ -41,6 +42,7 @@ node_fail = re.search(r"^# fail (\d+)", log, re.M)
 manifest = {
     "recorded_at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
     "command": "pnpm supabase:test",
+    "exclusive_run": bool(os.environ.get("RUN_WRAPPER")),
     "supabase_cli": json.loads(Path("package.json").read_text())["devDependencies"]["supabase"],
     "git_head_at_run": git("rev-parse", "HEAD"),
     "dirty_files": [f for f in git("status", "--porcelain", "--", *SOURCES).splitlines() if f],

@@ -21,16 +21,12 @@ not use provider API keys, so no checks involved live keys.
 
 ## Supabase
 
-The captured `pnpm supabase:test` log (2025-12-25 05:08 UTC, Supabase CLI 2.117.0,
-HEAD `a9cd134`, no uncommitted source files recorded) reports **61 pgTAP checks and 12 Auth API
-integration checks passed**. The test script resets the local database before running the checks,
-but the captured log does not include the reset output. The log hash and all 13 source hashes in the
-manifest match the current files. This is a verified historical capture; the database was not
-rerun during this verification pass.
-
-The manifest's `git_head_at_run` (`a9cd134`) no longer resolves: the repository history was
-rewritten after the run. The per-file sha256 values in the manifest are the reference for what was
-tested, and every one matches the committed files.
+`pnpm supabase:test`, run exclusively on the machine on 2025-12-25 (Supabase CLI 2.117.0, HEAD
+`97d66bd`, no uncommitted source files), reset the local database, applied every migration and
+the seed, and passed **61 pgTAP checks and 12 Auth API integration checks**. The stack was stopped
+afterward, and the manifest's per-file sha256 values match the committed files. Earlier captures of
+the same suite recorded commits that were later rewritten out of history; this run supersedes
+them.
 
 The run covers:
 - the signup hook and OTP confirmation;
@@ -42,7 +38,9 @@ The run covers:
 - plus-addressed aliases refused;
 - a sticky admin revoke;
 - author ids hidden from anon;
-- three distinct reporters flagging a review.
+- three distinct reporters flagging a review;
+- a reporters' flag surviving a two-step edit (add a link, then remove it);
+- three reporters on separate sessions reporting at once, without a deadlock.
 
 See [`docs/results/supabase-tests.txt`](results/supabase-tests.txt) and its
 [manifest](results/supabase-tests.manifest.json). The manifest's per-file sha256 values identify
