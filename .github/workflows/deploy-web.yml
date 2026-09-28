@@ -36,6 +36,8 @@ jobs:
           path: apps/mobile/dist
 
   deploy:
+    # Enable Pages before requesting a deployment manually.
+    if: github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
     environment:
